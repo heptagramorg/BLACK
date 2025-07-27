@@ -1,0 +1,104 @@
+name: black
+description: A student note-sharing app designed to help students collaborate and share academic resources.
+publish_to: 'none'
+version: 1.2.5+67
+
+environment:
+  sdk: '>=2.19.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Cupertino Icons
+  cupertino_icons: ^1.0.5
+
+  # Web View
+  webview_flutter: ^4.7.0
+  
+  # --- CORE & UTILITIES ---
+  # Authentication and Database
+  supabase_flutter: ^2.5.6
+  
+  # State Management
+  provider: ^6.1.2
+  
+  # Local Storage & Formatting
+  shared_preferences: ^2.2.3
+  intl: ^0.19.0
+  timeago: ^3.6.1
+
+  # Env variables
+  flutter_dotenv: ^5.1.0 # ADDED: For .env file loading
+
+  # Firebase for Notifications
+  firebase_core: ^2.32.0 # ADDED: For Firebase initialization
+  firebase_messaging: ^14.9.3 # ADDED: For Push Notifications
+
+  # Media and Files
+  image_picker: ^1.1.1
+  path_provider: ^2.1.3
+  http: ^1.2.1
+  flutter_cache_manager: ^3.3.2
+  path: ^1.9.0
+
+  # App Features
+  google_sign_in: ^6.2.1
+  url_launcher: ^6.3.0
+  table_calendar: ^3.1.1
+  flutter_pdfview: ^1.3.2
+  photo_view: ^0.15.0
+  share_plus: ^9.0.0
+  google_mobile_ads: ^5.1.0
+  connectivity_plus: ^6.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+  # --- Configuration Tools ---
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+  change_app_package_name: ^1.1.0
+
+# Flutter Specific Configuration
+flutter:
+  uses-material-design: true
+
+  # Assets Configuration (ensure these paths exist)
+  assets:
+    - assets/
+    - assets/images/
+    - assets/fonts/
+    - .env # ADDED: To make .env file available to the app
+
+  # Font Declaration
+  fonts:
+    - family: Roboto # Font Family Name
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+
+# --- Launcher Icon Configuration ---
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/your_logo.png"
+  adaptive_icon_background: "#E0AAFF"
+  adaptive_icon_foreground: "assets/images/your_logo.png"
+
+# --- Native Splash Screen Configuration ---
+flutter_native_splash:
+  color: "#000000"
+  image: assets/images/black_logo.png
+  color_dark: "#000000"
+  image_dark: assets/images/black_logo.png
+  android_12:
+    image: assets/images/black_logo.png
+    icon_background_color: "#000000"
+    image_dark: assets/images/black_logo.png
+    icon_background_color_dark: "#000000"
+  web: false

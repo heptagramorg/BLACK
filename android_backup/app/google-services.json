@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "679307988148",
+    "project_id": "black-9f920",
+    "storage_bucket": "black-9f920.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679307988148:android:06fcc6c86a6651b577dbe1",
+        "android_client_info": {
+          "package_name": "com.loveucifer.black"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6-jdKzIo0REZshWQIiogUIQDRVL1nQO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
