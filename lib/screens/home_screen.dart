@@ -48,7 +48,11 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUserData() async {
     try {
-      final profile = await _supabase.from('profiles').select().eq('id', widget.userId).single();
+      final profile = await _supabase
+          .from('profiles')
+          .select()
+          .eq('id', widget.userId)
+          .single();
       if (mounted) {
         setState(() {
           name = profile['name'] ?? 'Unknown User';
@@ -56,18 +60,18 @@ class HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      if (mounted) { 
-        setState(() { 
-          name = "Error"; 
-        }); 
+      if (mounted) {
+        setState(() {
+          name = "Error";
+        });
       }
     }
   }
 
   void _closeSidebar() {
     if (mounted) {
-      setState(() { 
-        _isSidebarOpen = false; 
+      setState(() {
+        _isSidebarOpen = false;
       });
     }
   }
@@ -76,7 +80,8 @@ class HomeScreenState extends State<HomeScreen> {
     _closeSidebar();
     Future.delayed(const Duration(milliseconds: 280), () {
       if (mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => screen));
       }
     });
   }
@@ -108,16 +113,23 @@ class HomeScreenState extends State<HomeScreen> {
           CustomScrollView(
             slivers: <Widget>[
               SliverAppBar(
-                title: Text("Home", style: TextStyle(fontWeight: FontWeight.bold, color: theme.appBarTheme.foregroundColor)),
-                backgroundColor: isDarkMode ? Colors.black : theme.appBarTheme.backgroundColor,
+                title: Text("Home",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: theme.appBarTheme.foregroundColor)),
+                backgroundColor: isDarkMode
+                    ? Colors.black
+                    : theme.appBarTheme.backgroundColor,
                 elevation: 0,
                 pinned: true,
                 forceElevated: false,
                 scrolledUnderElevation: 0,
                 systemOverlayStyle: theme.appBarTheme.systemOverlayStyle,
                 leading: IconButton(
-                  icon: Icon(Icons.menu_rounded, color: theme.iconTheme.color, size: 28),
-                  onPressed: () => setState(() => _isSidebarOpen = !_isSidebarOpen),
+                  icon: Icon(Icons.menu_rounded,
+                      color: theme.iconTheme.color, size: 28),
+                  onPressed: () =>
+                      setState(() => _isSidebarOpen = !_isSidebarOpen),
                   tooltip: "Open Menu",
                 ),
               ),
@@ -130,7 +142,6 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-
           if (_isSidebarOpen)
             Positioned.fill(
               child: GestureDetector(
@@ -143,7 +154,6 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOutCubic,
@@ -188,7 +198,7 @@ class HomeScreenState extends State<HomeScreen> {
         bottomRight: Radius.circular(borderRadiusValue),
       ),
       child: ClipRRect(
-         borderRadius: const BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topRight: Radius.circular(borderRadiusValue),
           bottomRight: Radius.circular(borderRadiusValue),
         ),
@@ -208,20 +218,56 @@ class HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         _buildSidebarItemGroup([
-                          _buildSidebarItem(Icons.search_rounded, "Search Notes", SearchNotesScreen(userId: widget.userId), theme, isDarkMode),
-                          _buildSidebarItem(Icons.person_search_rounded, "Search Users", SearchUsersScreen(currentUserId: widget.userId), theme, isDarkMode),
-                          _buildSidebarItem(Icons.trending_up_rounded, "Trending Notes", TrendingNotesScreen(userId: widget.userId), theme, isDarkMode),
+                          _buildSidebarItem(
+                              Icons.search_rounded,
+                              "Search Notes",
+                              SearchNotesScreen(userId: widget.userId),
+                              theme,
+                              isDarkMode),
+                          _buildSidebarItem(
+                              Icons.person_search_rounded,
+                              "Search Users",
+                              SearchUsersScreen(currentUserId: widget.userId),
+                              theme,
+                              isDarkMode),
+                          _buildSidebarItem(
+                              Icons.trending_up_rounded,
+                              "Trending Notes",
+                              TrendingNotesScreen(userId: widget.userId),
+                              theme,
+                              isDarkMode),
                         ], theme, isDarkMode),
                         _buildSidebarSectionDivider(theme),
                         _buildSidebarItemGroup([
-                          _buildSidebarItem(Icons.forum_outlined, "Forum", ForumScreen(userId: widget.userId), theme, isDarkMode),
-                          _buildSidebarItem(Icons.description_outlined, "View Notes", ViewNotesScreen(userId: widget.userId), theme, isDarkMode),
-                          _buildSidebarItem(Icons.calendar_today_outlined, "Calendar", const CalendarScreen(), theme, isDarkMode),
-                          _buildSidebarItem(Icons.checklist_rtl_rounded, "To-Do List", const TodoScreen(), theme, isDarkMode),
+                          _buildSidebarItem(
+                              Icons.forum_outlined,
+                              "Forum",
+                              ForumScreen(userId: widget.userId),
+                              theme,
+                              isDarkMode),
+                          _buildSidebarItem(
+                              Icons.description_outlined,
+                              "View Notes",
+                              ViewNotesScreen(userId: widget.userId),
+                              theme,
+                              isDarkMode),
+                          _buildSidebarItem(
+                              Icons.calendar_today_outlined,
+                              "Calendar",
+                              const CalendarScreen(),
+                              theme,
+                              isDarkMode),
+                          _buildSidebarItem(
+                              Icons.checklist_rtl_rounded,
+                              "To-Do List",
+                              const TodoScreen(),
+                              theme,
+                              isDarkMode),
                         ], theme, isDarkMode),
                         _buildSidebarSectionDivider(theme),
                         _buildDarkModeToggle(theme, isDarkMode),
-                        _buildSidebarItem(Icons.settings_outlined, "Settings", const SettingsScreen(), theme, isDarkMode),
+                        _buildSidebarItem(Icons.settings_outlined, "Settings",
+                            const SettingsScreen(), theme, isDarkMode),
                         const SizedBox(height: 40),
                       ],
                     ),
@@ -235,12 +281,15 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSidebarItemGroup(List<Widget> items, ThemeData theme, bool isDarkMode) {
+  Widget _buildSidebarItemGroup(
+      List<Widget> items, ThemeData theme, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: isDarkMode ? Colors.white.withValues(alpha: 0.05) : theme.colorScheme.surface.withValues(alpha: 0.7),
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.05)
+              : theme.colorScheme.surface.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(18.0),
         ),
         child: Column(
@@ -252,7 +301,11 @@ class HomeScreenState extends State<HomeScreen> {
                 if (index < items.length - 1)
                   Padding(
                     padding: const EdgeInsets.only(left: 60.0, right: 16.0),
-                    child: Divider(height: 0.5, thickness: 0.5, color: theme.dividerColor.withValues(alpha: isDarkMode ? 0.2 : 0.3)),
+                    child: Divider(
+                        height: 0.5,
+                        thickness: 0.5,
+                        color: theme.dividerColor
+                            .withValues(alpha: isDarkMode ? 0.2 : 0.3)),
                   )
               ],
             );
@@ -262,15 +315,20 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSidebarSectionDivider(ThemeData theme) { 
-    return Padding( 
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0), 
-      child: Divider(height: 1, thickness: 1, color: theme.dividerColor.withValues(alpha: 0.1)), 
-    ); 
+  Widget _buildSidebarSectionDivider(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      child: Divider(
+          height: 1,
+          thickness: 1,
+          color: theme.dividerColor.withValues(alpha: 0.1)),
+    );
   }
-  
+
   Widget _buildSidebarHeader(ThemeData theme, bool isDarkMode) {
-    final textColor = isDarkMode ? Colors.white.withValues(alpha: 0.9) : theme.textTheme.bodyLarge?.color;
+    final textColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.9)
+        : theme.textTheme.bodyLarge?.color;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
       child: Row(
@@ -278,9 +336,18 @@ class HomeScreenState extends State<HomeScreen> {
         children: [
           CircleAvatar(
             radius: 32,
-            backgroundColor: isDarkMode ? theme.colorScheme.primary.withValues(alpha: 0.2) : Colors.grey.shade300,
-            backgroundImage: profilePictureUrl != null && profilePictureUrl!.isNotEmpty ? NetworkImage(profilePictureUrl!) : null,
-            child: profilePictureUrl == null || profilePictureUrl!.isEmpty ? Icon(Icons.person_outline_rounded, size: 32, color: isDarkMode ? Colors.white70 : Colors.grey.shade700) : null,
+            backgroundColor: isDarkMode
+                ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                : Colors.grey.shade300,
+            backgroundImage:
+                profilePictureUrl != null && profilePictureUrl!.isNotEmpty
+                    ? NetworkImage(profilePictureUrl!)
+                    : null,
+            child: profilePictureUrl == null || profilePictureUrl!.isEmpty
+                ? Icon(Icons.person_outline_rounded,
+                    size: 32,
+                    color: isDarkMode ? Colors.white70 : Colors.grey.shade700)
+                : null,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -290,14 +357,16 @@ class HomeScreenState extends State<HomeScreen> {
                 Text(
                   "Hi,",
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: isDarkMode ? Colors.white.withValues(alpha: 0.7) : Colors.grey.shade700,
+                    color: isDarkMode
+                        ? Colors.white.withValues(alpha: 0.7)
+                        : Colors.grey.shade700,
                   ),
                 ),
                 Text(
                   name,
                   style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: textColor,
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -309,8 +378,11 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSidebarItem(IconData icon, String label, Widget screen, ThemeData theme, bool isDarkMode) {
-    final itemColor = isDarkMode ? Colors.white.withValues(alpha: 0.85) : theme.textTheme.bodyLarge!.color;
+  Widget _buildSidebarItem(IconData icon, String label, Widget screen,
+      ThemeData theme, bool isDarkMode) {
+    final itemColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.85)
+        : theme.textTheme.bodyLarge!.color;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -324,7 +396,10 @@ class HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(icon, color: theme.colorScheme.primary, size: 22),
               const SizedBox(width: 22),
-              Expanded(child: Text(label, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, color: itemColor))),
+              Expanded(
+                  child: Text(label,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w500, color: itemColor))),
             ],
           ),
         ),
@@ -333,18 +408,24 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDarkModeToggle(ThemeData theme, bool isDarkMode) {
-     final itemColor = isDarkMode ? Colors.white.withValues(alpha: 0.85) : theme.textTheme.bodyLarge!.color;
-     return Consumer<ThemeProvider>(
+    final itemColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.85)
+        : theme.textTheme.bodyLarge!.color;
+    return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Container(
             decoration: BoxDecoration(
-              color: isDarkMode ? Colors.white.withValues(alpha: 0.05) : theme.colorScheme.surface.withValues(alpha: 0.7),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : theme.colorScheme.surface.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(18.0),
             ),
             child: SwitchListTile(
-              title: Text("Dark Mode", style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, color: itemColor)),
+              title: Text("Dark Mode",
+                  style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500, color: itemColor)),
               secondary: Icon(
                 isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
                 color: theme.colorScheme.primary,
@@ -354,10 +435,13 @@ class HomeScreenState extends State<HomeScreen> {
               onChanged: (value) {
                 themeProvider.toggleTheme(value);
               },
-              activeThumbColor: theme.colorScheme.primary,
-              inactiveTrackColor: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300,
-              inactiveThumbColor: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade50,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+              activeTrackColor: theme.colorScheme.primary,
+              inactiveTrackColor:
+                  isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300,
+              inactiveThumbColor:
+                  isDarkMode ? Colors.grey.shade500 : Colors.grey.shade50,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
             ),
           ),
         );
@@ -388,7 +472,9 @@ class HomeScreenState extends State<HomeScreen> {
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.transparent,
           selectedItemColor: theme.colorScheme.primary,
-          unselectedItemColor: isDarkMode ? theme.bottomNavigationBarTheme.unselectedItemColor : Colors.grey.shade500,
+          unselectedItemColor: isDarkMode
+              ? theme.bottomNavigationBarTheme.unselectedItemColor
+              : Colors.grey.shade500,
           showSelectedLabels: false,
           showUnselectedLabels: false,
           elevation: 0,
@@ -422,8 +508,11 @@ class HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHomeTabContent(bool isDarkMode) {
     final theme = Theme.of(context);
-    final textColor = (isDarkMode ? Colors.white.withValues(alpha: 0.9) : theme.textTheme.bodyLarge?.color) ?? Colors.black;
-    
+    final textColor = (isDarkMode
+            ? Colors.white.withValues(alpha: 0.9)
+            : theme.textTheme.bodyLarge?.color) ??
+        Colors.black;
+
     return Container(
       color: theme.scaffoldBackgroundColor,
       child: RefreshIndicator(
@@ -439,11 +528,16 @@ class HomeScreenState extends State<HomeScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-                child: Text("Welcome back,", style: theme.textTheme.titleMedium?.copyWith(color: textColor.withValues(alpha: 0.7))),
+                child: Text("Welcome back,",
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(color: textColor.withValues(alpha: 0.7))),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                child: Text(name, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: textColor)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                child: Text(name,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold, color: textColor)),
               ),
               const SizedBox(height: 24),
               _buildQuickActionsSection(isDarkMode, theme),
@@ -480,7 +574,9 @@ class HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Quick Actions", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text("Quick Actions",
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           GridView.count(
             crossAxisCount: 2,
@@ -490,10 +586,39 @@ class HomeScreenState extends State<HomeScreen> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              _buildFeatureCardNew(context, "Upload Note", Icons.upload_file_rounded, isDarkMode ? darkRadialGradient : lightLinearGradient, () => _onItemTapped(1), theme, isDarkMode),
-              _buildFeatureCardNew(context, "Calendar", Icons.calendar_month_rounded, isDarkMode ? darkRadialGradient : lightLinearGradient, () => _navigateToScreen(const CalendarScreen()), theme, isDarkMode),
-              _buildFeatureCardNew(context, "Forum", Icons.forum_rounded, isDarkMode ? darkRadialGradient : lightLinearGradient, () => _navigateToScreen(ForumScreen(userId: widget.userId)), theme, isDarkMode),
-              _buildFeatureCardNew(context, "Search Notes", Icons.search_rounded, isDarkMode ? darkRadialGradient : lightLinearGradient, () => _navigateToScreen(SearchNotesScreen(userId: widget.userId)), theme, isDarkMode),
+              _buildFeatureCardNew(
+                  context,
+                  "Upload Note",
+                  Icons.upload_file_rounded,
+                  isDarkMode ? darkRadialGradient : lightLinearGradient,
+                  () => _onItemTapped(1),
+                  theme,
+                  isDarkMode),
+              _buildFeatureCardNew(
+                  context,
+                  "Calendar",
+                  Icons.calendar_month_rounded,
+                  isDarkMode ? darkRadialGradient : lightLinearGradient,
+                  () => _navigateToScreen(const CalendarScreen()),
+                  theme,
+                  isDarkMode),
+              _buildFeatureCardNew(
+                  context,
+                  "Forum",
+                  Icons.forum_rounded,
+                  isDarkMode ? darkRadialGradient : lightLinearGradient,
+                  () => _navigateToScreen(ForumScreen(userId: widget.userId)),
+                  theme,
+                  isDarkMode),
+              _buildFeatureCardNew(
+                  context,
+                  "Search Notes",
+                  Icons.search_rounded,
+                  isDarkMode ? darkRadialGradient : lightLinearGradient,
+                  () => _navigateToScreen(
+                      SearchNotesScreen(userId: widget.userId)),
+                  theme,
+                  isDarkMode),
             ],
           ),
         ],
@@ -501,7 +626,15 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFeatureCardNew( BuildContext context, String title, IconData icon, Gradient gradient, VoidCallback onTap, ThemeData theme, bool isDarkMode, ) {
+  Widget _buildFeatureCardNew(
+    BuildContext context,
+    String title,
+    IconData icon,
+    Gradient gradient,
+    VoidCallback onTap,
+    ThemeData theme,
+    bool isDarkMode,
+  ) {
     final Color iconTextColor = Colors.white.withValues(alpha: 0.95);
     return InkWell(
       onTap: onTap,
@@ -513,7 +646,9 @@ class HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: isDarkMode ? Colors.black.withValues(alpha: 0.6) : Colors.grey.withValues(alpha: 0.25),
+              color: isDarkMode
+                  ? Colors.black.withValues(alpha: 0.6)
+                  : Colors.grey.withValues(alpha: 0.25),
               blurRadius: 18,
               offset: const Offset(0, 8),
             )
@@ -530,7 +665,10 @@ class HomeScreenState extends State<HomeScreen> {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: iconTextColor, fontSize: 15),
+              style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: iconTextColor,
+                  fontSize: 15),
             ),
           ],
         ),
