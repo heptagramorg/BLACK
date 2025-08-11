@@ -19,7 +19,7 @@ class FileLoadingDialog extends StatefulWidget {
 
   @override
   State<FileLoadingDialog> createState() => _FileLoadingDialogState();
-  
+
   /// Shows a loading dialog that automatically handles errors and dismisses itself
   static Future<bool> show({
     required BuildContext context,
@@ -30,7 +30,7 @@ class FileLoadingDialog extends StatefulWidget {
     Duration retryDelay = const Duration(seconds: 2),
   }) async {
     bool result = true;
-    
+
     // Show the dialog
     showDialog(
       context: context,
@@ -43,7 +43,7 @@ class FileLoadingDialog extends StatefulWidget {
         retryDelay: retryDelay,
       ),
     );
-    
+
     // Wait for the future to complete
     try {
       await loadingFuture;
@@ -51,7 +51,7 @@ class FileLoadingDialog extends StatefulWidget {
       result = false;
       // Error is handled by the dialog itself
     }
-    
+
     return result;
   }
 }
@@ -62,22 +62,22 @@ class _FileLoadingDialogState extends State<FileLoadingDialog> {
   String _errorMessage = "An error occurred while loading the file.";
   String _errorDetails = "";
   bool _isRetrying = false;
-  
+
   @override
   void initState() {
     super.initState();
     _handleLoading();
   }
-  
+
   Future<void> _handleLoading() async {
     try {
       await widget.loadingFuture;
-      
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        
+
         // Close dialog automatically after successful load
         Navigator.of(context).pop(true);
       }
@@ -85,54 +85,62 @@ class _FileLoadingDialogState extends State<FileLoadingDialog> {
       if (mounted) {
         String errorMessage = e.toString();
         String errorDetails = "";
-        
+
         // Format HTTP error messages more clearly
         if (errorMessage.contains("400")) {
           errorMessage = "Failed to load file";
-          errorDetails = "The server rejected the request (Error 400). The file may not be available.";
+          errorDetails =
+              "The server rejected the request (Error 400). The file may not be available.";
         } else if (errorMessage.contains("403")) {
           errorMessage = "Access denied";
-          errorDetails = "You don't have permission to access this file (Error 403).";
+          errorDetails =
+              "You don't have permission to access this file (Error 403).";
         } else if (errorMessage.contains("404")) {
           errorMessage = "File not found";
-          errorDetails = "The requested file could not be found on the server (Error 404).";
+          errorDetails =
+              "The requested file could not be found on the server (Error 404).";
         } else if (errorMessage.contains("timeout")) {
           errorMessage = "Connection timeout";
-          errorDetails = "The server took too long to respond. Please check your internet connection.";
-        } else if (errorMessage.contains("connection refused") || errorMessage.contains("network is unreachable")) {
+          errorDetails =
+              "The server took too long to respond. Please check your internet connection.";
+        } else if (errorMessage.contains("connection refused") ||
+            errorMessage.contains("network is unreachable")) {
           errorMessage = "Network error";
-          errorDetails = "Could not connect to the server. Please check your internet connection.";
+          errorDetails =
+              "Could not connect to the server. Please check your internet connection.";
         }
-        
+
         setState(() {
           _isLoading = false;
           _hasError = true;
           _errorMessage = errorMessage;
           _errorDetails = errorDetails;
         });
-        
+
         // Don't close dialog automatically on error
         // User needs to press "Try Again" or "Cancel"
       }
     }
   }
-  
+
   void _retryLoading() {
     if (widget.retryCount >= widget.maxRetries) {
       // Max retries reached, show a different message
       setState(() {
         _errorMessage = "Maximum retry attempts reached";
-        _errorDetails = "Please try again later or contact support if the problem persists.";
+        _errorDetails =
+            "Please try again later or contact support if the problem persists.";
       });
       return;
     }
-    
+
     setState(() {
       _isRetrying = true;
       _errorMessage = "Retrying...";
-      _errorDetails = "Attempt ${widget.retryCount + 1} of ${widget.maxRetries}";
+      _errorDetails =
+          "Attempt ${widget.retryCount + 1} of ${widget.maxRetries}";
     });
-    
+
     // For simplicity, we'll close this dialog and let the caller handle reopening it
     // with an incremented retry count after a delay
     Future.delayed(const Duration(seconds: 1), () {
@@ -145,7 +153,7 @@ class _FileLoadingDialogState extends State<FileLoadingDialog> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black87;
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: backgroundColor,
@@ -157,7 +165,7 @@ class _FileLoadingDialogState extends State<FileLoadingDialog> {
             if (_isLoading) ...[
               const SizedBox(
                 width: 40,
-                height: 40, 
+                height: 40,
                 child: CircularProgressIndicator(
                   color: Colors.purple,
                   strokeWidth: 3,
@@ -188,7 +196,7 @@ class _FileLoadingDialogState extends State<FileLoadingDialog> {
               _isRetrying
                   ? const SizedBox(
                       width: 40,
-                      height: 40, 
+                      height: 40,
                       child: CircularProgressIndicator(
                         color: Colors.orange,
                         strokeWidth: 3,
@@ -250,7 +258,8 @@ class _FileLoadingDialogState extends State<FileLoadingDialog> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),

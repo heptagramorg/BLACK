@@ -87,8 +87,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor:
-            isError ? Theme.of(context).colorScheme.error : Colors.green.shade600,
+        backgroundColor: isError
+            ? Theme.of(context).colorScheme.error
+            : Colors.green.shade600,
         behavior: SnackBarBehavior.floating,
         duration: duration,
         shape: RoundedRectangleBorder(
@@ -221,15 +222,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const SizedBox(width: 12),
                             ElevatedButton(
                               onPressed: () {
-                                if (_passwordFormKey.currentState!
-                                    .validate()) {
+                                if (_passwordFormKey.currentState!.validate()) {
                                   Navigator.of(dialogContext).pop(true);
                                 }
                               },
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12))),
+                                      borderRadius: BorderRadius.circular(12))),
                               child: const Text("Update Password"),
                             ),
                           ],
@@ -278,8 +277,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
-      labelStyle:
-          TextStyle(color: isDarkMode ? Colors.white.withAlpha(179) : theme.hintColor),
+      labelStyle: TextStyle(
+          color: isDarkMode ? Colors.white.withAlpha(179) : theme.hintColor),
       prefixIcon: Icon(icon,
           // FIX: Removed unnecessary null-aware operator `?.` because `hintColor` is guaranteed to be non-null by the app's theme.
           color: isDarkMode
@@ -674,8 +673,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             title: "New Follower Alerts",
                             value: _newFollowerNotifications,
                             onChanged: (value) {
-                              setState(
-                                  () => _newFollowerNotifications = value);
+                              setState(() => _newFollowerNotifications = value);
                               _savePreference(
                                   'new_follower_notifications', value);
                             },
@@ -839,8 +837,8 @@ class _SettingTile extends StatelessWidget {
         : Colors.transparent;
 
     Widget tileContent = ListTile(
-      contentPadding: EdgeInsets.symmetric(
-          horizontal: 16.0, vertical: dense ? 4.0 : 8.0),
+      contentPadding:
+          EdgeInsets.symmetric(horizontal: 16.0, vertical: dense ? 4.0 : 8.0),
       leading: Icon(icon, color: defaultIconColor, size: dense ? 20 : 24),
       title: Text(
         title,

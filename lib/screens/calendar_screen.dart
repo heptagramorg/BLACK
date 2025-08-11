@@ -45,8 +45,7 @@ class CalendarScreenState extends State<CalendarScreen> {
             final Map<String, dynamic> eventMap =
                 Map<String, dynamic>.from(eventData);
             if (eventMap['date'] != null) {
-              eventMap['date'] =
-                  DateTime.tryParse(eventMap['date'] as String);
+              eventMap['date'] = DateTime.tryParse(eventMap['date'] as String);
             }
             if (eventMap['created_at'] != null) {
               eventMap['created_at'] =
@@ -113,8 +112,8 @@ class CalendarScreenState extends State<CalendarScreen> {
         _events[dayKey] = [];
       }
       _events[dayKey]!.add(newEvent);
-      _events[dayKey]!
-          .sort((a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime));
+      _events[dayKey]!.sort(
+          (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime));
     });
     _saveLocalEvents();
   }
@@ -156,7 +155,8 @@ class CalendarScreenState extends State<CalendarScreen> {
                 const PopupMenuItem(
                     value: CalendarFormat.month, child: Text('Month View')),
                 const PopupMenuItem(
-                    value: CalendarFormat.twoWeeks, child: Text('2 Weeks View')),
+                    value: CalendarFormat.twoWeeks,
+                    child: Text('2 Weeks View')),
                 const PopupMenuItem(
                     value: CalendarFormat.week, child: Text('Week View')),
               ],
@@ -252,7 +252,8 @@ class CalendarScreenState extends State<CalendarScreen> {
           headerPadding: const EdgeInsets.symmetric(vertical: 12.0),
         ),
         daysOfWeekStyle: DaysOfWeekStyle(
-          weekdayStyle: theme.textTheme.bodyMedium!.copyWith(color: theme.hintColor),
+          weekdayStyle:
+              theme.textTheme.bodyMedium!.copyWith(color: theme.hintColor),
           // FIX: `withOpacity` is deprecated, use `withAlpha`. (255 * 0.8).round() = 204
           weekendStyle: theme.textTheme.bodyMedium!
               .copyWith(color: theme.colorScheme.primary.withAlpha(204)),
@@ -260,8 +261,8 @@ class CalendarScreenState extends State<CalendarScreen> {
         calendarStyle: CalendarStyle(
           outsideDaysVisible: false,
           defaultTextStyle: theme.textTheme.bodyMedium!,
-          weekendTextStyle:
-              theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.primary),
+          weekendTextStyle: theme.textTheme.bodyMedium!
+              .copyWith(color: theme.colorScheme.primary),
           todayDecoration: BoxDecoration(
             // FIX: `withOpacity` is deprecated, use `withAlpha`. (255 * 0.2).round() = 51
             color: theme.colorScheme.primary.withAlpha(51),
@@ -271,10 +272,10 @@ class CalendarScreenState extends State<CalendarScreen> {
             color: theme.colorScheme.primary,
             shape: BoxShape.circle,
           ),
-          selectedTextStyle: theme.textTheme.bodyMedium!
-              .copyWith(color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold),
-          todayTextStyle: theme.textTheme.bodyMedium!
-              .copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+          selectedTextStyle: theme.textTheme.bodyMedium!.copyWith(
+              color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold),
+          todayTextStyle: theme.textTheme.bodyMedium!.copyWith(
+              color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
           markersAlignment: Alignment.bottomCenter,
         ),
         calendarBuilders: CalendarBuilders(
@@ -317,15 +318,18 @@ class CalendarScreenState extends State<CalendarScreen> {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text("Add Event for ${DateFormat.yMMMd().format(_selectedDay!)}"),
+          title:
+              Text("Add Event for ${DateFormat.yMMMd().format(_selectedDay!)}"),
           content: TextField(
             controller: eventController,
             decoration: InputDecoration(
               hintText: "Enter Event Details",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               filled: true,
               // FIX: `withOpacity` is deprecated, use `withAlpha`. (255 * 0.3).round() = 77
-              fillColor: theme.colorScheme.surfaceContainerHighest.withAlpha(77),
+              fillColor:
+                  theme.colorScheme.surfaceContainerHighest.withAlpha(77),
             ),
             autofocus: true,
             minLines: 1,
@@ -382,7 +386,8 @@ class CalendarScreenState extends State<CalendarScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.event_busy_outlined, size: 64, color: Colors.grey[400]),
+              Icon(Icons.event_busy_outlined,
+                  size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text("No events for this day.",
                   style: theme.textTheme.titleMedium

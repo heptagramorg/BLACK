@@ -9,7 +9,10 @@ class BackgroundWidget extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF4A90E2), Color(0xFF0D47A1)], // Light to Dark Blue Gradient
+          colors: [
+            Color(0xFF4A90E2),
+            Color(0xFF0D47A1)
+          ], // Light to Dark Blue Gradient
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

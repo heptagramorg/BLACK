@@ -146,8 +146,8 @@ class SecureFileHandler {
   }
 
   /// Main public method to open a file securely.
-  static Future<bool> openFile(BuildContext context, String fileUrl,
-      String fileName,
+  static Future<bool> openFile(
+      BuildContext context, String fileUrl, String fileName,
       [String fileType = '', String noteId = '', String userId = '']) async {
     _loadInterstitialAd();
 
@@ -159,8 +159,7 @@ class SecureFileHandler {
           : userId.trim();
       if (finalUserId.isEmpty) {
         if (context.mounted) {
-          _showMessage(context, "Login required to view notes.",
-              isError: true);
+          _showMessage(context, "Login required to view notes.", isError: true);
         }
         return false;
       }
@@ -173,7 +172,9 @@ class SecureFileHandler {
             'Invalid file URL format (cannot find "notes" bucket or path).');
       }
       final String filePath = segments.sublist(notesIndex + 1).join('/');
-      if (filePath.isEmpty || filePath.contains('//') || filePath.endsWith('/')) {
+      if (filePath.isEmpty ||
+          filePath.contains('//') ||
+          filePath.endsWith('/')) {
         throw Exception('Invalid extracted file path: "$filePath"');
       }
       final signedUrl =
@@ -309,7 +310,8 @@ class SecureFileHandler {
         }
         throw Exception('Download failed: HTTP ${response.statusCode}');
       }
-      if (response.bodyBytes.isEmpty) throw Exception('Downloaded file is empty');
+      if (response.bodyBytes.isEmpty)
+        throw Exception('Downloaded file is empty');
 
       final fileExtension = path.extension(fileName).isNotEmpty
           ? path.extension(fileName)

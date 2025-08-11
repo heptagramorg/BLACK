@@ -157,11 +157,13 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     setState(() => _isUploadingPicture = true);
 
-    final String? newImageUrl = await ProfilePictureHandler.uploadProfilePicture(
+    final String? newImageUrl =
+        await ProfilePictureHandler.uploadProfilePicture(
       widget.userId,
       _profileData?['profile_picture'] as String?,
       _picker,
-      (bool uploading) {}, // This callback seems unused, can be removed if not needed.
+      (bool
+          uploading) {}, // This callback seems unused, can be removed if not needed.
       _showMessage,
     );
 
@@ -241,7 +243,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                           nameController, "Name", theme, isDarkMode),
                       _buildEditTextField(universityController, "University",
                           theme, isDarkMode),
-                      _buildEditTextField(bioController, "Bio", theme, isDarkMode,
+                      _buildEditTextField(
+                          bioController, "Bio", theme, isDarkMode,
                           maxLines: 3),
                       const SizedBox(height: 24),
                       Row(
@@ -344,9 +347,8 @@ class ProfileScreenState extends State<ProfileScreen> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: isDarkMode
-                  ? Colors.white.withAlpha(179)
-                  : theme.hintColor),
+              color:
+                  isDarkMode ? Colors.white.withAlpha(179) : theme.hintColor),
           filled: true,
           fillColor: isDarkMode
               ? Colors.black.withAlpha(38)
@@ -381,8 +383,9 @@ class ProfileScreenState extends State<ProfileScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor:
-            isError ? Theme.of(context).colorScheme.error : Colors.green.shade600,
+        backgroundColor: isError
+            ? Theme.of(context).colorScheme.error
+            : Colors.green.shade600,
         behavior: SnackBarBehavior.floating,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -497,12 +500,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 65,
-                        backgroundColor: theme.colorScheme.surfaceContainerHighest
+                        backgroundColor: theme
+                            .colorScheme.surfaceContainerHighest
                             .withAlpha(isDarkMode ? 77 : 255),
-                        backgroundImage:
-                            profilePictureUrl != null && profilePictureUrl.isNotEmpty
-                                ? NetworkImage(profilePictureUrl)
-                                : null,
+                        backgroundImage: profilePictureUrl != null &&
+                                profilePictureUrl.isNotEmpty
+                            ? NetworkImage(profilePictureUrl)
+                            : null,
                         child: (profilePictureUrl == null ||
                                 profilePictureUrl.isEmpty)
                             ? Icon(Icons.person_rounded,
@@ -651,9 +655,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         _buildStatItem("Followers", followersCount,
             () => _navigateToFollowList(true), statTextColor, labelTextColor),
         Container(
-            height: 40,
-            width: 1,
-            color: theme.dividerColor.withAlpha(128)),
+            height: 40, width: 1, color: theme.dividerColor.withAlpha(128)),
         _buildStatItem("Following", followingCount,
             () => _navigateToFollowList(false), statTextColor, labelTextColor),
       ],

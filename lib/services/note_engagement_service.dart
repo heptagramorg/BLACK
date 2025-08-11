@@ -7,11 +7,12 @@ class NoteEngagementService {
   NoteEngagementService({SupabaseClient? supabase})
       : _supabase = supabase ?? SupabaseService.client;
 
-  Future<Map<String, dynamic>> toggleNoteLike(String noteId, String userId) async {
+  Future<Map<String, dynamic>> toggleNoteLike(
+      String noteId, String userId) async {
     if (userId.isEmpty) {
       return {'success': false, 'error': 'User not authenticated'};
     }
-    
+
     try {
       final result = await _supabase.rpc(
         'toggle_note_like',
@@ -74,7 +75,7 @@ class NoteEngagementService {
 
   Future<Set<String>> getLikedNoteIds(String userId) async {
     if (userId.isEmpty) return <String>{};
-    
+
     try {
       final data = await _supabase
           .from('note_likes')
@@ -128,12 +129,16 @@ class NoteEngagementService {
           .eq('user_id', userId);
 
       int noteCount = notesData.length;
-      int totalViews = notesData.fold(0, (sum, note) => sum + (note['view_count'] as int? ?? 0));
+      int totalViews = notesData.fold(
+          0, (sum, note) => sum + (note['view_count'] as int? ?? 0));
 
-      final bool isEligibleForPayout = noteCount >= noteCountTarget && totalViews >= viewsTarget;
+      final bool isEligibleForPayout =
+          noteCount >= noteCountTarget && totalViews >= viewsTarget;
 
-      final double noteCountProgress = (noteCount / noteCountTarget * 100).clamp(0.0, 100.0);
-      final double viewsProgress = (totalViews / viewsTarget * 100).clamp(0.0, 100.0);
+      final double noteCountProgress =
+          (noteCount / noteCountTarget * 100).clamp(0.0, 100.0);
+      final double viewsProgress =
+          (totalViews / viewsTarget * 100).clamp(0.0, 100.0);
 
       return {
         'noteCount': noteCount,

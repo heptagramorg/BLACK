@@ -242,9 +242,11 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
             "${widget.userId}/${timestamp}_$sanitizedLocalFileName";
         await _supabase.storage.from('notes').uploadBinary(
             uploadedSupabaseFilePath, fileBytes!,
-            fileOptions: const FileOptions(cacheControl: '3600', upsert: false));
-        fileUrlToSave =
-            _supabase.storage.from('notes').getPublicUrl(uploadedSupabaseFilePath);
+            fileOptions:
+                const FileOptions(cacheControl: '3600', upsert: false));
+        fileUrlToSave = _supabase.storage
+            .from('notes')
+            .getPublicUrl(uploadedSupabaseFilePath);
         fileNameToSave = fileName;
         fileTypeToSave = _fileType;
         fileSizeToSave = localFileSize;
@@ -281,7 +283,9 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
       _showMessage("Upload failed: ${e.toString()}", isError: true);
       if (uploadedSupabaseFilePath != null) {
         try {
-          await _supabase.storage.from('notes').remove([uploadedSupabaseFilePath]);
+          await _supabase.storage
+              .from('notes')
+              .remove([uploadedSupabaseFilePath]);
         } catch (_) {}
       }
     }
@@ -477,8 +481,9 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final Color onGlassTextColor =
-        isDarkMode ? Colors.white.withAlpha(229) : theme.textTheme.bodyLarge!.color!;
+    final Color onGlassTextColor = isDarkMode
+        ? Colors.white.withAlpha(229)
+        : theme.textTheme.bodyLarge!.color!;
     final Color onGradientTextColor = Colors.white.withAlpha(242);
 
     return Scaffold(
@@ -541,10 +546,9 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
                             const SizedBox(height: 10),
                             LinearProgressIndicator(
                               value: userStorageUsed / maxStorageLimit,
-                              backgroundColor: (isDarkMode
-                                      ? Colors.white
-                                      : Colors.black)
-                                  .withAlpha(26),
+                              backgroundColor:
+                                  (isDarkMode ? Colors.white : Colors.black)
+                                      .withAlpha(26),
                               valueColor: AlwaysStoppedAnimation<Color>(
                                   (userStorageUsed / maxStorageLimit) > 0.9
                                       ? theme.colorScheme.error
@@ -559,7 +563,9 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
                       TextField(
                         controller: titleController,
                         style: TextStyle(
-                            color: isDarkMode ? Colors.white.withAlpha(229) : null),
+                            color: isDarkMode
+                                ? Colors.white.withAlpha(229)
+                                : null),
                         decoration: InputDecoration(
                           labelText: "Title *",
                           prefixIcon: const Icon(Icons.title_rounded),
@@ -573,7 +579,9 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
                         maxLines: 4,
                         minLines: 2,
                         style: TextStyle(
-                            color: isDarkMode ? Colors.white.withAlpha(229) : null),
+                            color: isDarkMode
+                                ? Colors.white.withAlpha(229)
+                                : null),
                         decoration: InputDecoration(
                           labelText: "Description / Content *",
                           prefixIcon: const Padding(
@@ -599,8 +607,8 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
                               _isPublic
                                   ? "Anyone can find and view this note"
                                   : "Only you can view this note",
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: onGlassTextColor.withAlpha(179))),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                  color: onGlassTextColor.withAlpha(179))),
                           value: _isPublic,
                           onChanged: (bool value) {
                             if (mounted) setState(() => _isPublic = value);
@@ -621,7 +629,9 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
                       TextField(
                         controller: tagController,
                         style: TextStyle(
-                            color: isDarkMode ? Colors.white.withAlpha(229) : null),
+                            color: isDarkMode
+                                ? Colors.white.withAlpha(229)
+                                : null),
                         decoration: InputDecoration(
                           labelText: "Tags * (e.g., physics, exam)",
                           hintText: "Add up to 5 relevant tags",
@@ -653,9 +663,10 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
                                                       .onSecondaryContainer,
                                               fontSize: 13)),
                                       onDeleted: () => _removeTag(tag),
-                                      deleteIconColor:
-                                          theme.colorScheme.error.withAlpha(204),
-                                      backgroundColor: theme.colorScheme.secondary
+                                      deleteIconColor: theme.colorScheme.error
+                                          .withAlpha(204),
+                                      backgroundColor: theme
+                                          .colorScheme.secondary
                                           .withAlpha(isDarkMode ? 77 : 204),
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -711,7 +722,8 @@ class UploadNotesScreenState extends State<UploadNotesScreen> {
                             IconButton(
                                 icon: Icon(Icons.cancel_rounded,
                                     size: 24,
-                                    color: theme.colorScheme.error.withAlpha(204)),
+                                    color:
+                                        theme.colorScheme.error.withAlpha(204)),
                                 onPressed: () {
                                   if (mounted) {
                                     setState(() {

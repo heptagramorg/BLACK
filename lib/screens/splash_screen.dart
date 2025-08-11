@@ -19,11 +19,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkUserSession() async {
-    await Future.delayed(const Duration(seconds: 2)); // ✅ Simulated Splash Delay
+    await Future.delayed(
+        const Duration(seconds: 2)); // ✅ Simulated Splash Delay
 
     // Check if user is signed in with Supabase
     User? user = SupabaseService.currentUser;
-    
+
     if (user != null) {
       // Get user role from Supabase
       String userRole = "User";
@@ -33,21 +34,24 @@ class _SplashScreenState extends State<SplashScreen> {
             .select('role')
             .eq('id', user.id)
             .single();
-            
+
         userRole = profile['role'] ?? "User";
       } catch (e) {
         print("Error fetching user role: $e");
       }
-      
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen(userId: user.id, userRole: userRole)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  HomeScreen(userId: user.id, userRole: userRole)),
         );
       }
     } else {
       if (mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()));
       }
     }
   }
@@ -58,7 +62,10 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Color(0xFFF1E6FF)], // ✅ White to light purple
+            colors: [
+              Colors.white,
+              Color(0xFFF1E6FF)
+            ], // ✅ White to light purple
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

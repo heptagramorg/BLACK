@@ -72,21 +72,25 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
 
       if (!mounted) return;
       setState(() {
-        if (_currentPage == 1) { // For initial load
+        if (_currentPage == 1) {
+          // For initial load
           _notes = fetchedNotes;
-        } else { // For "load more"
+        } else {
+          // For "load more"
           _notes.addAll(fetchedNotes);
         }
         _hasMoreNotes = fetchedNotes.length == _pageSize;
-        if (fetchedNotes.isNotEmpty) { // Clear error if we successfully fetched some notes
-             _errorMessage = "";
+        if (fetchedNotes.isNotEmpty) {
+          // Clear error if we successfully fetched some notes
+          _errorMessage = "";
         }
       });
     } catch (e) {
       if (mounted) {
         setState(() {
           _errorMessage = e.toString().replaceFirst("Exception: ", "");
-          if (_currentPage > 1) { // If error on "load more", revert page count
+          if (_currentPage > 1) {
+            // If error on "load more", revert page count
             _currentPage--;
           }
         });
@@ -138,13 +142,18 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
                   Expanded(
                     child: Text(
                       note['title'] ?? "Untitled",
-                      style: Theme.of(bsContext).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis, // Prevent long titles from breaking layout
+                      style: Theme.of(bsContext)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                      overflow: TextOverflow
+                          .ellipsis, // Prevent long titles from breaking layout
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(bsContext), // Use bsContext to pop
+                    onPressed: () =>
+                        Navigator.pop(bsContext), // Use bsContext to pop
                   ),
                 ],
               ),
@@ -174,7 +183,10 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
                   controller: controller,
                   child: SelectableText(
                     note['content'] ?? "No content available.",
-                    style: Theme.of(bsContext).textTheme.bodyLarge?.copyWith(height: 1.5),
+                    style: Theme.of(bsContext)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(height: 1.5),
                   ),
                 ),
               ),
@@ -234,7 +246,8 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
                     textAlign: TextAlign.center),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                    onPressed: _fetchInitialNotes, child: const Text("Try Again")),
+                    onPressed: _fetchInitialNotes,
+                    child: const Text("Try Again")),
               ],
             ),
           ),
@@ -246,8 +259,8 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                vertical: 40.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 40.0, horizontal: 16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -265,10 +278,10 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/upload_note',
-                              arguments: {'userId': widget.userId})
-                          .then((_) =>
-                              _fetchInitialNotes()); // Refresh after potential upload
+                      Navigator.pushNamed(context, '/upload_note', arguments: {
+                        'userId': widget.userId
+                      }).then((_) =>
+                          _fetchInitialNotes()); // Refresh after potential upload
                     },
                     icon: const Icon(Icons.upload_file_outlined),
                     label: const Text("Upload Your First Note"),
@@ -341,16 +354,22 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Icon(
-                                    note['is_public'] == true ? Icons.public : Icons.lock_outline,
+                                    note['is_public'] == true
+                                        ? Icons.public
+                                        : Icons.lock_outline,
                                     size: 14,
-                                    color: note['is_public'] == true ? Colors.green.shade600 : Colors.grey.shade600,
+                                    color: note['is_public'] == true
+                                        ? Colors.green.shade600
+                                        : Colors.grey.shade600,
                                   ),
                                   Text(
                                     "${note['view_count'] ?? 0} views",
-                                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+                                    style: theme.textTheme.bodySmall
+                                        ?.copyWith(color: Colors.grey.shade600),
                                   ),
                                 ],
                               ),
@@ -374,12 +393,17 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
               child: Center(
                 child: _isLoadingMore
                     ? const CircularProgressIndicator()
-                    : (_errorMessage.isNotEmpty && !_hasMoreNotes && _notes.isNotEmpty) // Show error if load more failed
+                    : (_errorMessage.isNotEmpty &&
+                            !_hasMoreNotes &&
+                            _notes.isNotEmpty) // Show error if load more failed
                         ? Column(
                             children: [
-                              Text(_errorMessage, style: const TextStyle(color: Colors.red)),
+                              Text(_errorMessage,
+                                  style: const TextStyle(color: Colors.red)),
                               const SizedBox(height: 8),
-                              ElevatedButton(onPressed: _fetchMoreNotes, child: const Text("Try Again"))
+                              ElevatedButton(
+                                  onPressed: _fetchMoreNotes,
+                                  child: const Text("Try Again"))
                             ],
                           )
                         : (_hasMoreNotes // Show "Load More" button only if there are more notes and no error from last fetchMore
@@ -387,8 +411,9 @@ class _ProfileNotesGridState extends State<ProfileNotesGrid> {
                                 onPressed: _fetchMoreNotes,
                                 child: const Text("Load More Notes"),
                               )
-                            : const SizedBox.shrink() // Should not be reached if !_hasMoreNotes and no error
-                           ),
+                            : const SizedBox
+                                .shrink() // Should not be reached if !_hasMoreNotes and no error
+                        ),
               ),
             ),
           ),

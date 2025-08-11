@@ -44,7 +44,9 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen(userId: widget.uid, userRole: role)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  HomeScreen(userId: widget.uid, userRole: role)),
           (route) => false,
         );
       }
@@ -79,7 +81,8 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
                     const Text(
                       'Welcome! To get started, please tell us who you are.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 40),
                     _buildRoleCard(
@@ -102,7 +105,10 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
     );
   }
 
-  Widget _buildRoleCard(BuildContext context, {required IconData icon, required String role, required VoidCallback onTap}) {
+  Widget _buildRoleCard(BuildContext context,
+      {required IconData icon,
+      required String role,
+      required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -118,7 +124,8 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
               const SizedBox(height: 10),
               Text(
                 'I am a $role',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ],
           ),

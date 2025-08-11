@@ -7,10 +7,12 @@ import 'login_screen.dart'; // To navigate back to login
 class VerifyOtpAndResetScreen extends StatefulWidget {
   final String email;
 
-  const VerifyOtpAndResetScreen({Key? key, required this.email}) : super(key: key);
+  const VerifyOtpAndResetScreen({Key? key, required this.email})
+      : super(key: key);
 
   @override
-  State<VerifyOtpAndResetScreen> createState() => _VerifyOtpAndResetScreenState();
+  State<VerifyOtpAndResetScreen> createState() =>
+      _VerifyOtpAndResetScreenState();
 }
 
 class _VerifyOtpAndResetScreenState extends State<VerifyOtpAndResetScreen> {
@@ -18,22 +20,25 @@ class _VerifyOtpAndResetScreenState extends State<VerifyOtpAndResetScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _otpController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _isLoading = false;
   String _errorMessage = '';
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
-  void _showFeedback(String message, {bool isError = true, Duration? duration}) {
+  void _showFeedback(String message,
+      {bool isError = true, Duration? duration}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Theme.of(context).colorScheme.error : Colors.green.shade600,
-        behavior: SnackBarBehavior.floating,
-        duration: duration ?? const Duration(seconds: 4)
-      ),
+          content: Text(message),
+          backgroundColor: isError
+              ? Theme.of(context).colorScheme.error
+              : Colors.green.shade600,
+          behavior: SnackBarBehavior.floating,
+          duration: duration ?? const Duration(seconds: 4)),
     );
   }
 
@@ -54,18 +59,20 @@ class _VerifyOtpAndResetScreenState extends State<VerifyOtpAndResetScreen> {
       );
 
       if (mounted) {
-        _showFeedback("Password reset successful! Please log in with your new password.", isError: false);
+        _showFeedback(
+            "Password reset successful! Please log in with your new password.",
+            isError: false);
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
           (route) => false,
         );
       }
     } on AuthException catch (e) {
-      _errorMessage = e.message; 
-       _showFeedback(_errorMessage, isError: true); 
+      _errorMessage = e.message;
+      _showFeedback(_errorMessage, isError: true);
     } catch (e) {
       _errorMessage = "An unexpected error occurred: ${e.toString()}";
-       _showFeedback(_errorMessage, isError: true); 
+      _showFeedback(_errorMessage, isError: true);
     }
 
     if (mounted) {
@@ -90,21 +97,23 @@ class _VerifyOtpAndResetScreenState extends State<VerifyOtpAndResetScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.lock_reset_rounded, size: 60, color: theme.colorScheme.primary),
+              Icon(Icons.lock_reset_rounded,
+                  size: 60, color: theme.colorScheme.primary),
               const SizedBox(height: 16),
               Text(
                 "Create Your New Password",
-                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 "An OTP (One-Time Password / Token) has been sent to ${widget.email}. Enter it below.",
-                style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: theme.hintColor),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-
               if (_errorMessage.isNotEmpty && !_isLoading)
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -115,73 +124,99 @@ class _VerifyOtpAndResetScreenState extends State<VerifyOtpAndResetScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: theme.colorScheme.onErrorContainer),
+                      Icon(Icons.error_outline,
+                          color: theme.colorScheme.onErrorContainer),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           _errorMessage,
-                          style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                          style: TextStyle(
+                              color: theme.colorScheme.onErrorContainer),
                         ),
                       ),
                     ],
                   ),
                 ),
-
               TextFormField(
                 controller: _otpController,
-                decoration: _inputDecoration("OTP from Email", Icons.pin_outlined, theme),
-                keyboardType: TextInputType.text, 
+                decoration: _inputDecoration(
+                    "OTP from Email", Icons.pin_outlined, theme),
+                keyboardType: TextInputType.text,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) return "Please enter the OTP from your email.";
+                  if (value == null || value.trim().isEmpty)
+                    return "Please enter the OTP from your email.";
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: !_isNewPasswordVisible,
-                decoration: _inputDecoration("New Password", Icons.lock_outline, theme,
-                  suffixIcon: IconButton(
-                    icon: Icon(_isNewPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: theme.hintColor),
-                    onPressed: () => setState(() => _isNewPasswordVisible = !_isNewPasswordVisible),
-                  )),
+                decoration: _inputDecoration(
+                    "New Password", Icons.lock_outline, theme,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          _isNewPasswordVisible
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: theme.hintColor),
+                      onPressed: () => setState(
+                          () => _isNewPasswordVisible = !_isNewPasswordVisible),
+                    )),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return "Please enter a new password.";
-                  if (value.length < 6) return "Password must be at least 6 characters.";
+                  if (value == null || value.isEmpty)
+                    return "Please enter a new password.";
+                  if (value.length < 6)
+                    return "Password must be at least 6 characters.";
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: !_isConfirmPasswordVisible,
                 // *** CORRECTED ICON HERE ***
-                decoration: _inputDecoration("Confirm New Password", Icons.lock_outline, theme, // Changed from lock_check_outlined
-                 suffixIcon: IconButton(
-                    icon: Icon(_isConfirmPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: theme.hintColor),
-                    onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
-                  )),
+                decoration: _inputDecoration(
+                    "Confirm New Password",
+                    Icons.lock_outline,
+                    theme, // Changed from lock_check_outlined
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: theme.hintColor),
+                      onPressed: () => setState(() =>
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible),
+                    )),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return "Please confirm your new password.";
-                  if (value != _newPasswordController.text) return "Passwords do not match.";
+                  if (value == null || value.isEmpty)
+                    return "Please confirm your new password.";
+                  if (value != _newPasswordController.text)
+                    return "Passwords do not match.";
                   return null;
                 },
               ),
               const SizedBox(height: 32),
-
               ElevatedButton(
                 onPressed: _isLoading ? null : _handleSubmit,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: theme.colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isLoading
-                    ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                    : const Text("Set New Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2.5))
+                    : const Text("Set New Password",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -190,20 +225,20 @@ class _VerifyOtpAndResetScreenState extends State<VerifyOtpAndResetScreen> {
     );
   }
 
-  InputDecoration _inputDecoration(String label, IconData icon, ThemeData theme, {Widget? suffixIcon}) {
+  InputDecoration _inputDecoration(String label, IconData icon, ThemeData theme,
+      {Widget? suffixIcon}) {
     return InputDecoration(
-      labelText: label,
-      hintText: "Enter $label",
-      prefixIcon: Icon(icon, color: theme.hintColor),
-      suffixIcon: suffixIcon,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      filled: true,
-      fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.5),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
-      ),
-      errorStyle: TextStyle(color: theme.colorScheme.error)
-    );
+        labelText: label,
+        hintText: "Enter $label",
+        prefixIcon: Icon(icon, color: theme.hintColor),
+        suffixIcon: suffixIcon,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        filled: true,
+        fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
+        ),
+        errorStyle: TextStyle(color: theme.colorScheme.error));
   }
 }

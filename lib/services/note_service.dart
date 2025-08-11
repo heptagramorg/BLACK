@@ -102,8 +102,10 @@ class NotesService {
 
   Future<List<Map<String, dynamic>>> fetchSavedNotes(String userId) async {
     try {
-      final savedRefs =
-          await _supabase.from('saved_notes').select('note_id').eq('user_id', userId);
+      final savedRefs = await _supabase
+          .from('saved_notes')
+          .select('note_id')
+          .eq('user_id', userId);
 
       final savedList = savedRefs as List<dynamic>? ?? [];
       if (savedList.isEmpty) {
@@ -182,8 +184,8 @@ class NotesService {
           .select(
               '*, view_count, like_count, profiles:user_id(id, name, username, profile_picture)')
           .or('is_public.eq.true,user_id.eq.$userId')
-          .contains('tags', [lowerCaseTag])
-          .order('created_at', ascending: false);
+          .contains('tags', [lowerCaseTag]).order('created_at',
+              ascending: false);
 
       return List<Map<String, dynamic>>.from(data);
     } catch (e) {
@@ -225,8 +227,10 @@ class NotesService {
       if (fileUrl != null && fileUrl.isNotEmpty) {
         try {
           final Uri uri = Uri.parse(fileUrl);
-          final String storagePath =
-              uri.pathSegments.skipWhile((segment) => segment != 'notes').skip(1).join('/');
+          final String storagePath = uri.pathSegments
+              .skipWhile((segment) => segment != 'notes')
+              .skip(1)
+              .join('/');
 
           if (storagePath.isNotEmpty) {
             await _supabase.storage.from('notes').remove([storagePath]);
@@ -307,8 +311,10 @@ class NotesService {
 
   Future<Set<String>> getSavedNoteIds(String userId) async {
     try {
-      final data =
-          await _supabase.from('saved_notes').select('note_id').eq('user_id', userId);
+      final data = await _supabase
+          .from('saved_notes')
+          .select('note_id')
+          .eq('user_id', userId);
 
       final list = data as List<dynamic>? ?? [];
       return list.map((item) => item['note_id'] as String).toSet();
@@ -319,8 +325,10 @@ class NotesService {
 
   Future<int> cleanupStorageUsage(String userId) async {
     try {
-      final notesData =
-          await _supabase.from('notes').select('file_size').eq('user_id', userId);
+      final notesData = await _supabase
+          .from('notes')
+          .select('file_size')
+          .eq('user_id', userId);
 
       int totalCalculatedSize = 0;
       for (var note in notesData) {
