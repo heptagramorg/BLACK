@@ -91,10 +91,16 @@ class NoteEngagementProvider extends ChangeNotifier {
 
   /// Toggles the like status of a note.
   Future<bool> toggleNoteLike(String noteId) async {
-    if (_userId.isEmpty || isNoteProcessing(noteId))
+    if (_userId.isEmpty || isNoteProcessing(noteId)) {
+      if (_userId.isEmpty) print("User ID is empty");
+
+      print('User ID is empty or note is already being processed.');
       return false; // Need user, avoid double taps
+    }
 
     if (!mounted) return false; // Check if mounted
+
+    print("Toggling like for note: $noteId by user: $_userId");
 
     // Indicate processing
     _processingNotes[noteId] = true;
@@ -129,6 +135,7 @@ class NoteEngagementProvider extends ChangeNotifier {
         return false; // Indicate failure
       }
     } catch (e) {
+      print('Error toggling like for note $noteId: $e');
       if (!mounted) return false; // Check again
       return false; // Indicate failure
     } finally {
