@@ -36,7 +36,6 @@ import 'providers/theme_provider.dart';
 import 'providers/note_engagement_provider.dart';
 import 'services/supabase_service.dart';
 import 'services/auth_service.dart';
-import 'services/user_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -145,19 +144,7 @@ void _handleAuthStateChange(AuthState data) async {
     }
 
     // A user has signed in. Initialize user-specific providers.
-    if (currentContext != null && currentContext.mounted) {
-      final noteEngagementProvider =
-          Provider.of<NoteEngagementProvider>(currentContext, listen: false);
-
-      AuthService().getUserRole(session.user.id).then((role) {
-        // Check if context is still mounted after async operation.
-        if (currentContext.mounted) {
-          noteEngagementProvider.initialize(session.user.id);
-        }
-      }).catchError((e) {
-        debugPrint("Error getting user role on sign-in: $e");
-      });
-    }
+    await _initializeUserProviders(session.user.id, currentContext);
   } else if (event == AuthChangeEvent.signedOut) {
     // A user has signed out. Clear user-specific data and navigate to the login screen.
     if (currentContext != null && currentContext.mounted) {
@@ -170,6 +157,58 @@ void _handleAuthStateChange(AuthState data) async {
     }
     navigatorKey.currentState
         ?.pushNamedAndRemoveUntil('/login', (route) => false);
+  }
+}
+
+/// Initialize user-specific providers for authenticated users
+Future<void> _initializeUserProviders(
+    String userId, BuildContext? context) async {
+  if (context == null || !context.mounted || userId.isEmpty) {
+    debugPrint("Cannot initialize providers: invalid context or user ID");
+    return;
+  }
+
+  try {
+    final noteEngagementProvider =
+        Provider.of<NoteEngagementProvider>(context, listen: false);
+
+    // Check if already initialized for this user
+    if (!noteEngagementProvider.isLoading) {
+      debugPrint(
+          "NoteEngagementProvider already initialized for user: $userId");
+      return;
+    }
+
+    debugPrint("Initializing NoteEngagementProvider for user: $userId");
+
+    try {
+      final role = await AuthService().getUserRole(userId);
+      debugPrint("Retrieved user role: $role for user: $userId");
+    } catch (e) {
+      debugPrint(
+          "Warning: Could not retrieve user role: $e (continuing with initialization)");
+    }
+
+    // Initialize the provider regardless of role retrieval success
+    if (context.mounted) {
+      await noteEngagementProvider.initialize(userId);
+      debugPrint(
+          "NoteEngagementProvider successfully initialized for user: $userId");
+    }
+  } catch (e) {
+    debugPrint("Error initializing user providers: $e");
+    // Don't rethrow - let the app continue
+  }
+}
+
+/// Global function to initialize providers when context is available
+Future<void> initializeProvidersForCurrentUser() async {
+  final session = SupabaseService.client.auth.currentSession;
+  final context = navigatorKey.currentContext;
+
+  if (session != null && context != null && context.mounted) {
+    debugPrint("Initializing providers for current user: ${session.user.id}");
+    await _initializeUserProviders(session.user.id, context);
   }
 }
 
@@ -257,14 +296,133 @@ class EntryApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => NoteEngagementProvider()),
       ],
-      child: const MyApp(),
+      child: const AppInitializer(),
     );
   }
 }
 
+/// A wrapper widget that ensures providers are properly initialized before showing the main app
+class AppInitializer extends StatefulWidget {
+  const AppInitializer({super.key});
+
+  @override
+  State<AppInitializer> createState() => _AppInitializerState();
+}
+
+class _AppInitializerState extends State<AppInitializer> {
+  bool _isInitializing = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // Check for existing session and initialize providers
+    await _checkAndInitializeSession();
+
+    if (mounted) {
+      setState(() {
+        _isInitializing = false;
+      });
+    }
+  }
+
+  Future<void> _checkAndInitializeSession() async {
+    try {
+      final session = SupabaseService.client.auth.currentSession;
+      if (session != null && mounted) {
+        debugPrint(
+            "Found existing session, initializing providers for user: ${session.user.id}");
+        // Wait a bit for the providers to be available
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        if (mounted) {
+          final noteEngagementProvider =
+              Provider.of<NoteEngagementProvider>(context, listen: false);
+
+          // Check if already initialized to avoid duplicate initialization
+          if (noteEngagementProvider.isLoading) {
+            debugPrint("Initializing NoteEngagementProvider...");
+            await noteEngagementProvider.initialize(session.user.id);
+            debugPrint("NoteEngagementProvider initialization completed");
+          } else {
+            debugPrint("NoteEngagementProvider already initialized");
+          }
+        }
+      } else {
+        debugPrint("No existing session found");
+      }
+    } catch (e) {
+      debugPrint("Error during app initialization: $e");
+      // Continue with app startup even if provider initialization fails
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isInitializing) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor,
+                ),
+                const SizedBox(height: 16),
+                const Text('Initializing...'),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const MyApp();
+  }
+}
+
 /// The root widget of the application.
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Check for existing session and initialize providers if needed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkExistingSessionAndInitialize();
+    });
+  }
+
+  /// Check if there's an existing session and initialize providers accordingly
+  Future<void> _checkExistingSessionAndInitialize() async {
+    try {
+      final session = SupabaseService.client.auth.currentSession;
+      if (session != null && mounted) {
+        debugPrint(
+            "MyApp: Found existing session for user: ${session.user.id}");
+        // Small delay to ensure providers are ready
+        await Future.delayed(const Duration(milliseconds: 50));
+        if (mounted) {
+          await _initializeUserProviders(session.user.id, context);
+        }
+      } else {
+        debugPrint("MyApp: No existing session found");
+      }
+    } catch (e) {
+      debugPrint("MyApp: Error checking existing session: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
