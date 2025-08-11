@@ -114,7 +114,9 @@ class _SplashScreenAnimationState extends State<SplashScreenAnimation> {
       // FIX: Replaced print with debugPrint for better practice.
       debugPrint("Initial Connectivity Check: $_currentConnectivity");
 
-      final bool isOffline = _currentConnectivity.every((result) => result == ConnectivityResult.none) || _currentConnectivity.isEmpty;
+      final bool isOffline = _currentConnectivity
+              .every((result) => result == ConnectivityResult.none) ||
+          _currentConnectivity.isEmpty;
 
       if (isOffline) {
         await _showNoConnectionDialog();
@@ -180,19 +182,25 @@ class _SplashScreenAnimationState extends State<SplashScreenAnimation> {
 
   void _listenForConnectivityChanges() {
     _connectivitySubscription?.cancel();
-    _connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
+    _connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((List<ConnectivityResult> result) {
       debugPrint("Connectivity Changed: $result");
       if (!mounted) return;
 
-      bool wasOffline = _currentConnectivity.every((res) => res == ConnectivityResult.none) || _currentConnectivity.isEmpty;
+      bool wasOffline =
+          _currentConnectivity.every((res) => res == ConnectivityResult.none) ||
+              _currentConnectivity.isEmpty;
       _currentConnectivity = result;
-      bool isOffline = _currentConnectivity.every((res) => res == ConnectivityResult.none) || _currentConnectivity.isEmpty;
+      bool isOffline =
+          _currentConnectivity.every((res) => res == ConnectivityResult.none) ||
+              _currentConnectivity.isEmpty;
 
       if (isOffline && !wasOffline) {
         _showNoConnectionDialog();
       } else if (!isOffline && wasOffline) {
-        debugPrint("Connection restored. Closing potential no-connection dialog.");
+        debugPrint(
+            "Connection restored. Closing potential no-connection dialog.");
         if (Navigator.of(context).canPop()) {
           final ModalRoute<dynamic>? currentRoute = ModalRoute.of(context);
           if (currentRoute is DialogRoute) {
@@ -207,10 +215,13 @@ class _SplashScreenAnimationState extends State<SplashScreenAnimation> {
   Future<void> _checkUserSessionAndNavigate() async {
     if (!mounted) return;
 
-    final bool isOffline = _currentConnectivity.every((result) => result == ConnectivityResult.none) || _currentConnectivity.isEmpty;
+    final bool isOffline = _currentConnectivity
+            .every((result) => result == ConnectivityResult.none) ||
+        _currentConnectivity.isEmpty;
 
     if (isOffline) {
-      debugPrint("Still offline, showing dialog again instead of checking session.");
+      debugPrint(
+          "Still offline, showing dialog again instead of checking session.");
       await _showNoConnectionDialog();
       return;
     }
@@ -261,7 +272,8 @@ class _SplashScreenAnimationState extends State<SplashScreenAnimation> {
     } catch (e) {
       debugPrint("Error during authentication check/navigation: $e");
       if (mounted) {
-        debugPrint("Error checking session, navigating to LoginScreen as fallback.");
+        debugPrint(
+            "Error checking session, navigating to LoginScreen as fallback.");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),

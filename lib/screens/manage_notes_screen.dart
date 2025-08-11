@@ -38,7 +38,7 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
           .select('storage_used')
           .eq('id', widget.userId)
           .single();
-          
+
       if (!mounted) return;
       setState(() {
         _userStorageUsed = profile['storage_used'] ?? 0;
@@ -56,11 +56,11 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
       _hasError = false;
       _statusMessage = "";
     });
-    
+
     try {
       final notes = await _notesService.fetchUserNotes(widget.userId);
       if (!mounted) return;
-      
+
       setState(() {
         _notes = notes;
         _isLoading = false;
@@ -101,10 +101,12 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
   }
 
   /// Toggle note visibility (public/private)
-  Future<void> _toggleNoteVisibility(String noteId, bool currentlyPublic) async {
+  Future<void> _toggleNoteVisibility(
+      String noteId, bool currentlyPublic) async {
     try {
-      final success = await _notesService.updateNoteVisibility(noteId, !currentlyPublic);
-      
+      final success =
+          await _notesService.updateNoteVisibility(noteId, !currentlyPublic);
+
       if (!mounted) return;
 
       if (success) {
@@ -114,13 +116,15 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
             _notes[noteIndex]['is_public'] = !currentlyPublic;
           }
         });
-        _showMessage(currentlyPublic ? "Note is now private" : "Note is now public");
+        _showMessage(
+            currentlyPublic ? "Note is now private" : "Note is now public");
       } else {
         _showMessage("Failed to update note visibility", isError: true);
       }
     } catch (e) {
       if (!mounted) return;
-      _showMessage("Error updating note visibility: ${e.toString()}", isError: true);
+      _showMessage("Error updating note visibility: ${e.toString()}",
+          isError: true);
     }
   }
 
@@ -150,9 +154,8 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
       builder: (context) => AlertDialog(
         title: const Text("Confirm Deletion"),
         content: Text(
-          "Are you sure you want to delete ${_selectedNotes.length} selected note${_selectedNotes.length > 1 ? 's' : ''}? "
-          "This action cannot be undone."
-        ),
+            "Are you sure you want to delete ${_selectedNotes.length} selected note${_selectedNotes.length > 1 ? 's' : ''}? "
+            "This action cannot be undone."),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -166,7 +169,7 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
         ],
       ),
     );
-    
+
     if (shouldDelete != true || !mounted) return;
 
     setState(() {
@@ -178,7 +181,7 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
     int successCount = 0;
     List<String> failedNoteIds = [];
     final Set<String> notesToDelete = Set<String>.from(_selectedNotes);
-    
+
     for (String noteId in notesToDelete) {
       final success = await _deleteSingleNote(noteId);
       if (success) {
@@ -191,10 +194,12 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
     if (!mounted) return;
 
     setState(() {
-      _notes.removeWhere((note) => notesToDelete.contains(note['id']) && !failedNoteIds.contains(note['id']));
+      _notes.removeWhere((note) =>
+          notesToDelete.contains(note['id']) &&
+          !failedNoteIds.contains(note['id']));
       _selectedNotes.removeWhere((noteId) => !failedNoteIds.contains(noteId));
       _isDeleting = false;
-      
+
       if (failedNoteIds.isNotEmpty) {
         _hasError = true;
         _statusMessage = "Failed to delete ${failedNoteIds.length} notes";
@@ -202,23 +207,29 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
         _statusMessage = "Successfully deleted $successCount notes";
       }
     });
-    
+
     if (successCount > 0) {
-      _showMessage("Successfully deleted $successCount note(s)${failedNoteIds.isNotEmpty ? ", ${failedNoteIds.length} failed" : ""}",
-            isError: failedNoteIds.isNotEmpty);
+      _showMessage(
+          "Successfully deleted $successCount note(s)${failedNoteIds.isNotEmpty ? ", ${failedNoteIds.length} failed" : ""}",
+          isError: failedNoteIds.isNotEmpty);
     } else if (failedNoteIds.isNotEmpty) {
-      _showMessage("Failed to delete ${failedNoteIds.length} note(s)", isError: true);
+      _showMessage("Failed to delete ${failedNoteIds.length} note(s)",
+          isError: true);
     }
-    
+
     await _fetchUserStorageUsage();
   }
-  
+
   /// Fix Storage Usage Calculation
   Future<void> _fixStorageUsage() async {
-    setState(() { _isRefreshing = true; _statusMessage = "Recalculating storage usage..."; });
-    
+    setState(() {
+      _isRefreshing = true;
+      _statusMessage = "Recalculating storage usage...";
+    });
+
     try {
-      final correctedStorageUsage = await _notesService.cleanupStorageUsage(widget.userId);
+      final correctedStorageUsage =
+          await _notesService.cleanupStorageUsage(widget.userId);
       if (!mounted) return;
 
       if (correctedStorageUsage >= 0) {
@@ -226,38 +237,56 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
           _userStorageUsed = correctedStorageUsage;
           _statusMessage = "Storage usage has been recalculated";
         });
-        _showMessage("Storage usage recalculated: ${_formatFileSize(correctedStorageUsage)}");
+        _showMessage(
+            "Storage usage recalculated: ${_formatFileSize(correctedStorageUsage)}");
       } else {
-        setState(() { _hasError = true; _statusMessage = "Failed to recalculate storage usage"; });
+        setState(() {
+          _hasError = true;
+          _statusMessage = "Failed to recalculate storage usage";
+        });
         _showMessage("Failed to recalculate storage usage", isError: true);
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() { _hasError = true; _statusMessage = "Error recalculating storage: ${e.toString()}"; });
-      _showMessage("Error recalculating storage: ${e.toString()}", isError: true);
+      setState(() {
+        _hasError = true;
+        _statusMessage = "Error recalculating storage: ${e.toString()}";
+      });
+      _showMessage("Error recalculating storage: ${e.toString()}",
+          isError: true);
     } finally {
       if (mounted) {
         setState(() => _isRefreshing = false);
       }
     }
   }
-  
+
   /// Clean up orphaned files in storage
   Future<void> _cleanupOrphanedFiles() async {
-    setState(() { _isRefreshing = true; _statusMessage = "Cleaning up storage..."; });
-    
+    setState(() {
+      _isRefreshing = true;
+      _statusMessage = "Cleaning up storage...";
+    });
+
     try {
-      final notesData = await _supabase.from('notes').select('file_url').eq('user_id', widget.userId);
-      final validFileUrls = notesData.map((note) => note['file_url'] as String?).where((url) => url != null && url.isNotEmpty).toSet();
-      final storageList = await _supabase.storage.from('notes').list(path: widget.userId);
-      
+      final notesData = await _supabase
+          .from('notes')
+          .select('file_url')
+          .eq('user_id', widget.userId);
+      final validFileUrls = notesData
+          .map((note) => note['file_url'] as String?)
+          .where((url) => url != null && url.isNotEmpty)
+          .toSet();
+      final storageList =
+          await _supabase.storage.from('notes').list(path: widget.userId);
+
       int cleanedCount = 0;
       int totalFreedSpace = 0;
-      
+
       for (var item in storageList) {
         final String filePath = '${widget.userId}/${item.name}';
         final fileUrl = _supabase.storage.from('notes').getPublicUrl(filePath);
-        
+
         if (!validFileUrls.contains(fileUrl)) {
           final fileSize = item.metadata?['size'] as int? ?? 0;
           await _supabase.storage.from('notes').remove([filePath]);
@@ -265,22 +294,28 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
           totalFreedSpace += fileSize;
         }
       }
-      
+
       await _fixStorageUsage();
       if (!mounted) return;
 
       setState(() {
-        _statusMessage = cleanedCount > 0 ? "Cleaned up $cleanedCount orphaned files" : "No orphaned files found";
+        _statusMessage = cleanedCount > 0
+            ? "Cleaned up $cleanedCount orphaned files"
+            : "No orphaned files found";
       });
-      
+
       if (cleanedCount > 0) {
-        _showMessage("Cleaned up $cleanedCount orphaned files (${_formatFileSize(totalFreedSpace)})");
+        _showMessage(
+            "Cleaned up $cleanedCount orphaned files (${_formatFileSize(totalFreedSpace)})");
       }
-      
+
       await _fetchUserNotes();
     } catch (e) {
       if (!mounted) return;
-      setState(() { _hasError = true; _statusMessage = "Error cleaning up: ${e.toString()}"; });
+      setState(() {
+        _hasError = true;
+        _statusMessage = "Error cleaning up: ${e.toString()}";
+      });
       _showMessage("Error cleaning up: ${e.toString()}", isError: true);
     } finally {
       if (mounted) {
@@ -291,16 +326,25 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
 
   // Refresh data completely
   Future<void> _refreshData() async {
-    setState(() { _isRefreshing = true; _selectedNotes.clear(); _statusMessage = "Refreshing..."; });
-    
+    setState(() {
+      _isRefreshing = true;
+      _selectedNotes.clear();
+      _statusMessage = "Refreshing...";
+    });
+
     try {
       await _fetchUserStorageUsage();
       await _fetchUserNotes();
       if (!mounted) return;
-      setState(() { _statusMessage = "Data refreshed"; });
+      setState(() {
+        _statusMessage = "Data refreshed";
+      });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _hasError = true; _statusMessage = "Error refreshing: ${e.toString()}"; });
+      setState(() {
+        _hasError = true;
+        _statusMessage = "Error refreshing: ${e.toString()}";
+      });
     } finally {
       if (mounted) {
         setState(() => _isRefreshing = false);
@@ -313,7 +357,8 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: isError ? Colors.red.shade600 : Colors.green.shade600,
+          backgroundColor:
+              isError ? Colors.red.shade600 : Colors.green.shade600,
           duration: Duration(seconds: isError ? 4 : 2),
         ),
       );
@@ -344,9 +389,20 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'refresh', child: ListTile(leading: Icon(Icons.refresh), title: Text('Refresh'))),
-              const PopupMenuItem(value: 'cleanup', child: ListTile(leading: Icon(Icons.cleaning_services), title: Text('Clean Up Storage'))),
-              const PopupMenuItem(value: 'fix_storage', child: ListTile(leading: Icon(Icons.auto_fix_high), title: Text('Fix Storage Calculation'))),
+              const PopupMenuItem(
+                  value: 'refresh',
+                  child: ListTile(
+                      leading: Icon(Icons.refresh), title: Text('Refresh'))),
+              const PopupMenuItem(
+                  value: 'cleanup',
+                  child: ListTile(
+                      leading: Icon(Icons.cleaning_services),
+                      title: Text('Clean Up Storage'))),
+              const PopupMenuItem(
+                  value: 'fix_storage',
+                  child: ListTile(
+                      leading: Icon(Icons.auto_fix_high),
+                      title: Text('Fix Storage Calculation'))),
             ],
           ),
         ],
@@ -363,11 +419,15 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("Storage Usage", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      const Text("Storage Usage",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
                       Text(
                         "${_formatFileSize(_userStorageUsed)} / 250 MB",
                         style: TextStyle(
-                          color: (_userStorageUsed / maxStorageLimit) > 0.9 ? Colors.red : null,
+                          color: (_userStorageUsed / maxStorageLimit) > 0.9
+                              ? Colors.red
+                              : null,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -377,7 +437,10 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
                   LinearProgressIndicator(
                     value: _userStorageUsed / maxStorageLimit,
                     backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>((_userStorageUsed / maxStorageLimit) > 0.9 ? Colors.red : Colors.green),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        (_userStorageUsed / maxStorageLimit) > 0.9
+                            ? Colors.red
+                            : Colors.green),
                   ),
                 ],
               ),
@@ -391,13 +454,22 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
               decoration: BoxDecoration(
                 color: _hasError ? Colors.red.shade50 : Colors.green.shade50,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: _hasError ? Colors.red.shade200 : Colors.green.shade200),
+                border: Border.all(
+                    color: _hasError
+                        ? Colors.red.shade200
+                        : Colors.green.shade200),
               ),
               child: Row(
                 children: [
-                  Icon(_hasError ? Icons.error_outline : Icons.info_outline, color: _hasError ? Colors.red : Colors.green, size: 20),
+                  Icon(_hasError ? Icons.error_outline : Icons.info_outline,
+                      color: _hasError ? Colors.red : Colors.green, size: 20),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(_statusMessage, style: TextStyle(color: _hasError ? Colors.red.shade800 : Colors.green.shade800))),
+                  Expanded(
+                      child: Text(_statusMessage,
+                          style: TextStyle(
+                              color: _hasError
+                                  ? Colors.red.shade800
+                                  : Colors.green.shade800))),
                   IconButton(
                     icon: const Icon(Icons.close, size: 16),
                     onPressed: () => setState(() => _statusMessage = ""),
@@ -411,7 +483,7 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
           Expanded(
             child: _isLoading || _isRefreshing
                 ? const Center(child: CircularProgressIndicator())
-                : _notes.isEmpty 
+                : _notes.isEmpty
                     ? const Center(child: Text("No notes found"))
                     : ListView.builder(
                         itemCount: _notes.length,
@@ -421,61 +493,112 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
                           final String id = note['id'] as String;
                           final bool isSelected = _selectedNotes.contains(id);
                           final bool isPublic = note['is_public'] == true;
-                          
+
                           return Card(
                             margin: const EdgeInsets.only(bottom: 8),
                             elevation: isSelected ? 2 : 1,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
-                              side: isSelected ? const BorderSide(color: Colors.blue, width: 2) : BorderSide.none,
+                              side: isSelected
+                                  ? const BorderSide(
+                                      color: Colors.blue, width: 2)
+                                  : BorderSide.none,
                             ),
                             child: Column(
                               children: [
                                 ListTile(
-                                  leading: Checkbox(value: isSelected, onChanged: (value) => _toggleNoteSelection(id)),
+                                  leading: Checkbox(
+                                      value: isSelected,
+                                      onChanged: (value) =>
+                                          _toggleNoteSelection(id)),
                                   title: Row(
                                     children: [
-                                      Expanded(child: Text(note['title'] as String, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                      Expanded(
+                                          child: Text(note['title'] as String,
+                                              style: const TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold))),
                                       if (isPublic)
-                                        const Tooltip(message: "Public Note", child: Icon(Icons.public, size: 16, color: Colors.green)),
+                                        const Tooltip(
+                                            message: "Public Note",
+                                            child: Icon(Icons.public,
+                                                size: 16, color: Colors.green)),
                                     ],
                                   ),
-                                  subtitle: Text(note['description'] as String, maxLines: 1, overflow: TextOverflow.ellipsis),
-                                  trailing: Text(_formatFileSize(note['file_size'] as int? ?? 0)),
+                                  subtitle: Text(note['description'] as String,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis),
+                                  trailing: Text(_formatFileSize(
+                                      note['file_size'] as int? ?? 0)),
                                   onTap: () => _toggleNoteSelection(id),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 16.0, right: 16.0, bottom: 8.0),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       OutlinedButton.icon(
-                                        icon: Icon(isPublic ? Icons.public : Icons.lock, size: 16, color: isPublic ? Colors.green : null),
-                                        label: Text(isPublic ? "Public" : "Private", style: TextStyle(color: isPublic ? Colors.green : null)),
-                                        onPressed: () => _toggleNoteVisibility(id, isPublic),
-                                        style: OutlinedButton.styleFrom(side: BorderSide(color: isPublic ? Colors.green : Colors.grey)),
+                                        icon: Icon(
+                                            isPublic
+                                                ? Icons.public
+                                                : Icons.lock,
+                                            size: 16,
+                                            color:
+                                                isPublic ? Colors.green : null),
+                                        label: Text(
+                                            isPublic ? "Public" : "Private",
+                                            style: TextStyle(
+                                                color: isPublic
+                                                    ? Colors.green
+                                                    : null)),
+                                        onPressed: () =>
+                                            _toggleNoteVisibility(id, isPublic),
+                                        style: OutlinedButton.styleFrom(
+                                            side: BorderSide(
+                                                color: isPublic
+                                                    ? Colors.green
+                                                    : Colors.grey)),
                                       ),
                                       const SizedBox(width: 8),
                                       OutlinedButton.icon(
-                                        icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
-                                        label: const Text("Delete", style: TextStyle(color: Colors.red)),
+                                        icon: const Icon(Icons.delete_outline,
+                                            size: 16, color: Colors.red),
+                                        label: const Text("Delete",
+                                            style:
+                                                TextStyle(color: Colors.red)),
                                         onPressed: () async {
-                                          final shouldDelete = await showDialog<bool>(
+                                          final shouldDelete =
+                                              await showDialog<bool>(
                                             context: context,
                                             builder: (context) => AlertDialog(
                                               title: const Text("Delete Note"),
-                                              content: const Text("Are you sure you want to delete this note? This action cannot be undone."),
+                                              content: const Text(
+                                                  "Are you sure you want to delete this note? This action cannot be undone."),
                                               actions: [
-                                                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
-                                                TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Delete", style: TextStyle(color: Colors.red))),
+                                                TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(
+                                                            context, false),
+                                                    child:
+                                                        const Text("Cancel")),
+                                                TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(
+                                                            context, true),
+                                                    child: const Text("Delete",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.red))),
                                               ],
                                             ),
                                           );
-                                          
+
                                           if (shouldDelete == true) {
                                             setState(() => _isDeleting = true);
-                                            final success = await _deleteSingleNote(id);
-                                            
+                                            final success =
+                                                await _deleteSingleNote(id);
+
                                             if (!mounted) return;
 
                                             if (success) {
@@ -484,9 +607,12 @@ class ManageNotesScreenState extends State<ManageNotesScreen> {
                                                 _selectedNotes.remove(id);
                                               });
                                               _fetchUserStorageUsage();
-                                              _showMessage("Note deleted successfully");
+                                              _showMessage(
+                                                  "Note deleted successfully");
                                             } else {
-                                              _showMessage("Failed to delete note", isError: true);
+                                              _showMessage(
+                                                  "Failed to delete note",
+                                                  isError: true);
                                             }
                                             setState(() => _isDeleting = false);
                                           }

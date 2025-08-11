@@ -14,30 +14,29 @@ class InAppFileViewer {
   static const int _maxRetries = 3;
 
   /// Open a file securely in the app
-  static Future<void> openFile(BuildContext context, String fileUrl, String fileName) async {
+  static Future<void> openFile(
+      BuildContext context, String fileUrl, String fileName) async {
     try {
       // Extract the path from the URL
       final Uri uri = Uri.parse(fileUrl);
       final segments = uri.pathSegments;
-      
+
       // Find the notes bucket in the path
       final int notesIndex = segments.indexOf('notes');
       if (notesIndex == -1 || notesIndex + 1 >= segments.length) {
         throw Exception('Invalid file URL format. Cannot extract file path.');
       }
-      
+
       // Get path after the 'notes' segment
       final String path = segments.sublist(notesIndex + 1).join('/');
       print("Extracted file path: $path");
-      
+
       // Create a fresh signed URL with 1-hour expiration
-      final signedUrl = await _supabase
-          .storage
-          .from('notes')
-          .createSignedUrl(path, 60 * 60);
-      
+      final signedUrl =
+          await _supabase.storage.from('notes').createSignedUrl(path, 60 * 60);
+
       print("Generated signed URL: $signedUrl");
-      
+
       // Now proceed with the file opening process using the signed URL
       _retryCount = 0;
       await _attemptFileOpen(context, signedUrl, fileName);
@@ -48,12 +47,14 @@ class InAppFileViewer {
       }
     }
   }
-  
+
   /// Attempt to open a file with retry logic
-  static Future<void> _attemptFileOpen(BuildContext context, String fileUrl, String fileName) async {
+  static Future<void> _attemptFileOpen(
+      BuildContext context, String fileUrl, String fileName) async {
     // Create loading future
-    final Future<DownloadResult> loadingFuture = _downloadFile(fileUrl, fileName);
-    
+    final Future<DownloadResult> loadingFuture =
+        _downloadFile(fileUrl, fileName);
+
     // Show loading dialog with our new component
     final bool loadingSuccess = await FileLoadingDialog.show(
       context: context,
@@ -63,7 +64,7 @@ class InAppFileViewer {
       maxRetries: _maxRetries,
       retryDelay: Duration(seconds: _retryCount + 1), // Exponential backoff
     );
-    
+
     // If loading failed, check if we should retry
     if (!loadingSuccess) {
       if (_retryCount < _maxRetries) {
@@ -77,18 +78,19 @@ class InAppFileViewer {
       } else {
         // Max retries reached, show an error
         if (context.mounted) {
-          _showErrorSnackbar(context, "Maximum retry attempts reached. Please try again later.");
+          _showErrorSnackbar(context,
+              "Maximum retry attempts reached. Please try again later.");
         }
         return;
       }
     }
-    
+
     try {
       // Get the downloaded file info from the completed future
       final downloadResult = await loadingFuture;
       final tempFilePath = downloadResult.filePath;
       final fileExtension = downloadResult.fileExtension;
-      
+
       // Open appropriate viewer based on file type
       if (context.mounted) {
         if (fileExtension == 'pdf') {
@@ -96,50 +98,55 @@ class InAppFileViewer {
         } else if (['jpg', 'jpeg', 'png', 'gif'].contains(fileExtension)) {
           await _openImageViewer(context, tempFilePath, fileName);
         } else {
-          await _openGenericFileViewer(context, tempFilePath, fileName, _getMimeType(fileExtension));
+          await _openGenericFileViewer(
+              context, tempFilePath, fileName, _getMimeType(fileExtension));
         }
       }
-      
+
       // Log file access
       _logFileAccess(fileUrl, fileName);
-      
     } catch (e) {
       print("Error in openFile: $e");
-      
+
       if (context.mounted) {
         _showErrorSnackbar(context, "Error loading file: $e");
       }
     }
   }
-  
+
   /// Download the file and return its info - this wraps the download process for the loading dialog
-  static Future<DownloadResult> _downloadFile(String fileUrl, String fileName) async {
+  static Future<DownloadResult> _downloadFile(
+      String fileUrl, String fileName) async {
     try {
       print("Opening file: $fileUrl");
       print("File name: $fileName");
-      
+
       // Validate URL
       if (!fileUrl.startsWith('http')) {
-        throw Exception('Invalid URL format. URL must start with http:// or https://');
+        throw Exception(
+            'Invalid URL format. URL must start with http:// or https://');
       }
-      
+
       if (fileUrl.contains('/null/') || fileUrl.contains('null.null')) {
-        throw Exception('Invalid file URL. The file path contains null values.');
+        throw Exception(
+            'Invalid file URL. The file path contains null values.');
       }
-      
+
       // Get file extension
-      final fileExtension = path.extension(fileName).toLowerCase().replaceAll('.', '');
+      final fileExtension =
+          path.extension(fileName).toLowerCase().replaceAll('.', '');
       if (fileExtension.isEmpty) {
         print("Warning: File extension not found in filename: $fileName");
       }
-      
+
       // Download file to temporary location
       final tempDir = await getTemporaryDirectory();
-      final tempFileName = 'temp_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
+      final tempFileName =
+          'temp_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
       final tempFilePath = '${tempDir.path}/$tempFileName';
-      
+
       print("Downloading file to: $tempFilePath");
-      
+
       // Download with proper headers and error handling
       final response = await http.get(
         Uri.parse(fileUrl),
@@ -147,55 +154,60 @@ class InAppFileViewer {
           'Accept': '*/*',
           'User-Agent': 'BlackApp/1.0',
           'Connection': 'keep-alive',
-          'Authorization': 'Bearer ${_supabase.auth.currentSession?.accessToken}',
+          'Authorization':
+              'Bearer ${_supabase.auth.currentSession?.accessToken}',
         },
       ).timeout(const Duration(seconds: 30));
-      
+
       // Handle HTTP errors explicitly
       if (response.statusCode == 400) {
-        throw Exception('The server rejected the request (Error 400). The file may not be available.');
+        throw Exception(
+            'The server rejected the request (Error 400). The file may not be available.');
       } else if (response.statusCode == 401) {
-        throw Exception('Authentication required to access this file (Error 401).');
+        throw Exception(
+            'Authentication required to access this file (Error 401).');
       } else if (response.statusCode == 403) {
-        throw Exception('You do not have permission to access this file (Error 403).');
+        throw Exception(
+            'You do not have permission to access this file (Error 403).');
       } else if (response.statusCode == 404) {
-        throw Exception('The requested file could not be found on the server (Error 404).');
+        throw Exception(
+            'The requested file could not be found on the server (Error 404).');
       } else if (response.statusCode != 200) {
-        throw Exception('Failed to download file: HTTP Status ${response.statusCode}');
+        throw Exception(
+            'Failed to download file: HTTP Status ${response.statusCode}');
       }
-      
+
       if (response.bodyBytes.isEmpty) {
         throw Exception('Downloaded file is empty');
       }
-      
+
       // Save file to temporary location
       final file = File(tempFilePath);
       await file.writeAsBytes(response.bodyBytes);
-      
+
       // Verify file was created and has content
       if (!await file.exists()) {
         throw Exception('Failed to create local file');
       }
-      
+
       final fileSize = await file.length();
       if (fileSize == 0) {
         throw Exception('Created file is empty');
       }
-      
+
       print("File saved to: $tempFilePath with size $fileSize bytes");
-      
+
       return DownloadResult(
-        filePath: tempFilePath,
-        fileExtension: fileExtension.isEmpty ? 'bin' : fileExtension,
-        fileSize: fileSize
-      );
+          filePath: tempFilePath,
+          fileExtension: fileExtension.isEmpty ? 'bin' : fileExtension,
+          fileSize: fileSize);
     } catch (e) {
       print("Error downloading file: $e");
       // Rethrow the error to be handled by the loading dialog
       rethrow;
     }
   }
-  
+
   /// Show error snackbar
   static void _showErrorSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -213,9 +225,10 @@ class InAppFileViewer {
       ),
     );
   }
-  
+
   /// Open PDF viewer
-  static Future<void> _openPdfViewer(BuildContext context, String filePath, String fileName) async {
+  static Future<void> _openPdfViewer(
+      BuildContext context, String filePath, String fileName) async {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -266,9 +279,10 @@ class InAppFileViewer {
       ),
     );
   }
-  
+
   /// Open image viewer
-  static Future<void> _openImageViewer(BuildContext context, String filePath, String fileName) async {
+  static Future<void> _openImageViewer(
+      BuildContext context, String filePath, String fileName) async {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -296,7 +310,8 @@ class InAppFileViewer {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.broken_image, size: 64, color: Colors.red),
+                        const Icon(Icons.broken_image,
+                            size: 64, color: Colors.red),
                         const SizedBox(height: 16),
                         Text(
                           "Failed to load image: $error",
@@ -335,9 +350,10 @@ class InAppFileViewer {
       ),
     );
   }
-  
+
   /// Open generic file viewer for other file types
-  static Future<void> _openGenericFileViewer(BuildContext context, String filePath, String fileName, String fileType) async {
+  static Future<void> _openGenericFileViewer(BuildContext context,
+      String filePath, String fileName, String fileType) async {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -388,7 +404,8 @@ class InAppFileViewer {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.info_outline, color: Colors.amber[700], size: 20),
+                              Icon(Icons.info_outline,
+                                  color: Colors.amber[700], size: 20),
                               const SizedBox(width: 8),
                               Flexible(
                                 child: Text(
@@ -431,7 +448,7 @@ class InAppFileViewer {
       ),
     );
   }
-  
+
   /// Determine MIME type from file extension
   static String _getMimeType(String extension) {
     switch (extension.toLowerCase()) {
@@ -539,7 +556,7 @@ class DownloadResult {
   final String filePath;
   final String fileExtension;
   final int fileSize;
-  
+
   DownloadResult({
     required this.filePath,
     required this.fileExtension,

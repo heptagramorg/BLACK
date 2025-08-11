@@ -141,8 +141,8 @@ class _TodoScreenState extends State<TodoScreen> {
                       filled: true,
                       // FIX: `surfaceVariant` is deprecated, use `surfaceContainerHighest`.
                       // FIX: `withOpacity` is deprecated, use `withAlpha`. (255 * 0.3).round() = 77
-                      fillColor:
-                          theme.colorScheme.surfaceContainerHighest.withAlpha(77),
+                      fillColor: theme.colorScheme.surfaceContainerHighest
+                          .withAlpha(77),
                       prefixIcon: Icon(Icons.edit_note_outlined,
                           color: theme.hintColor),
                     ),
@@ -265,8 +265,8 @@ class _TodoScreenState extends State<TodoScreen> {
 
     if (pickedDate == null || !mounted) return null;
 
-    TimeOfDay initialTime = TimeOfDay.fromDateTime(
-        initialDateTime ?? DateTime(now.year, now.month, now.day, now.hour + 1));
+    TimeOfDay initialTime = TimeOfDay.fromDateTime(initialDateTime ??
+        DateTime(now.year, now.month, now.day, now.hour + 1));
 
     TimeOfDay? pickedTime = await showTimePicker(
         context: pickerContext,
@@ -427,8 +427,9 @@ class _TodoScreenState extends State<TodoScreen> {
                                   : (isOverdue
                                       ? theme.colorScheme.error
                                       : theme.hintColor),
-                              decoration:
-                                  isCompleted ? TextDecoration.lineThrough : null,
+                              decoration: isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : null,
                             ),
                           )
                         : null,

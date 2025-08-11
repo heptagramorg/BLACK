@@ -146,7 +146,8 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
           }
         }
       }
-      final data = await query.order(orderField, ascending: ascending).limit(25);
+      final data =
+          await query.order(orderField, ascending: ascending).limit(25);
       List<Map<String, dynamic>> fetchedNotes =
           List<Map<String, dynamic>>.from(data);
 
@@ -156,8 +157,10 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
         for (var note in fetchedNotes) {
           final noteId = note['id']?.toString() ?? '';
           if (noteId.isNotEmpty) {
-            engagementProvider.updateNoteData(noteId,
-                note['view_count'] as int? ?? 0, note['like_count'] as int? ?? 0);
+            engagementProvider.updateNoteData(
+                noteId,
+                note['view_count'] as int? ?? 0,
+                note['like_count'] as int? ?? 0);
             note['is_saved'] = _savedNoteIds.contains(noteId);
           }
         }
@@ -182,8 +185,8 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
   Future<void> _toggleSaveNote(String noteId, bool currentlySaved) async {
     if (!mounted) return;
     try {
-      final success =
-          await _notesService.toggleSaveNote(widget.userId, noteId, currentlySaved);
+      final success = await _notesService.toggleSaveNote(
+          widget.userId, noteId, currentlySaved);
       if (success && mounted) {
         setState(() {
           if (currentlySaved) {
@@ -199,7 +202,9 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
           }
         });
         _showMessage(
-            currentlySaved ? "Note removed from saved" : "Note saved successfully",
+            currentlySaved
+                ? "Note removed from saved"
+                : "Note saved successfully",
             isError: false);
       } else if (mounted) {
         _showMessage("Failed to update saved status", isError: true);
@@ -224,14 +229,17 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
     final success = await engagementProvider.toggleNoteLike(noteId);
     if (success && mounted) {
       _showMessage(
-          engagementProvider.isNoteLiked(noteId) ? "Note liked" : "Note unliked",
+          engagementProvider.isNoteLiked(noteId)
+              ? "Note liked"
+              : "Note unliked",
           isError: false);
     } else if (mounted) {
       _showMessage("Failed to update like status", isError: true);
     }
   }
 
-  Future<void> _toggleNoteVisibility(String noteId, bool currentlyPublic) async {
+  Future<void> _toggleNoteVisibility(
+      String noteId, bool currentlyPublic) async {
     if (!mounted) return;
     try {
       final success =
@@ -344,8 +352,8 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                 builder: (_, controller) => Container(
                     decoration: BoxDecoration(
                         color: theme.scaffoldBackgroundColor,
-                        borderRadius:
-                            const BorderRadius.vertical(top: Radius.circular(22))),
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(22))),
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -379,7 +387,8 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                                 ? Colors.redAccent
                                                 : theme.iconTheme.color,
                                             size: 22),
-                                        onPressed: () => _toggleNoteLike(noteId),
+                                        onPressed: () =>
+                                            _toggleNoteLike(noteId),
                                         tooltip: isLiked ? "Unlike" : "Like"),
                                   if (isOwner)
                                     IconButton(
@@ -393,8 +402,8 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                             size: 22),
                                         onPressed: () {
                                           Navigator.pop(context);
-                                          _toggleNoteVisibility(
-                                              noteId, note['is_public'] == true);
+                                          _toggleNoteVisibility(noteId,
+                                              note['is_public'] == true);
                                         },
                                         tooltip: note['is_public'] == true
                                             ? "Make Private"
@@ -473,16 +482,15 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                             ])),
                         if (!isOwner && note['profiles'] != null)
                           Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(20, 4, 20, 8),
+                              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
                               child: Row(children: [
                                 CircleAvatar(
                                     radius: 18,
-                                    backgroundImage: (authorProfilePic !=
-                                                null &&
-                                            authorProfilePic.isNotEmpty)
-                                        ? NetworkImage(authorProfilePic)
-                                        : null,
+                                    backgroundImage:
+                                        (authorProfilePic != null &&
+                                                authorProfilePic.isNotEmpty)
+                                            ? NetworkImage(authorProfilePic)
+                                            : null,
                                     child: (authorProfilePic == null ||
                                             authorProfilePic.isEmpty)
                                         ? Icon(Icons.person_rounded,
@@ -497,8 +505,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                           style: theme.textTheme.titleSmall
                                               ?.copyWith(
                                                   color: onSurfaceColor,
-                                                  fontWeight:
-                                                      FontWeight.w600)),
+                                                  fontWeight: FontWeight.w600)),
                                       if (authorUsername != null)
                                         Text("@$authorUsername",
                                             style: theme.textTheme.bodySmall
@@ -531,8 +538,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                         if (note['tags'] != null &&
                             (note['tags'] as List).isNotEmpty)
                           Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                               child: Wrap(
                                   spacing: 8,
                                   runSpacing: 6,
@@ -541,12 +547,11 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                           label: Text(tag.toString()),
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 4),
-                                          visualDensity:
-                                              VisualDensity.compact,
+                                          visualDensity: VisualDensity.compact,
                                           labelStyle: TextStyle(
                                               fontSize: 12,
-                                              color: theme.chipTheme
-                                                  .labelStyle?.color),
+                                              color: theme
+                                                  .chipTheme.labelStyle?.color),
                                           backgroundColor:
                                               theme.chipTheme.backgroundColor,
                                           shape: RoundedRectangleBorder(
@@ -559,8 +564,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                               controller: controller,
                               padding: const EdgeInsets.all(20),
                               child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SelectableText(
                                         note['content']?.toString() ??
@@ -572,9 +576,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                                 color: onSurfaceColor
                                                     .withAlpha(217))),
                                     if (note['file_url'] != null &&
-                                        note['file_url']
-                                            .toString()
-                                            .isNotEmpty)
+                                        note['file_url'].toString().isNotEmpty)
                                       Container(
                                           margin: const EdgeInsets.only(
                                               top: 24, bottom: 16),
@@ -598,8 +600,8 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                                       _getFileIcon(
                                                           note['file_type'] ??
                                                               ''),
-                                                      color: theme.colorScheme
-                                                          .primary),
+                                                      color: theme
+                                                          .colorScheme.primary),
                                                   const SizedBox(width: 10),
                                                   Expanded(
                                                       child: Text(
@@ -627,43 +629,35 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                                 SizedBox(
                                                     width: double.infinity,
                                                     child: ElevatedButton.icon(
-                                                        onPressed:
-                                                            _processingNotes[
-                                                                        noteId] ==
-                                                                    true
-                                                                ? null
-                                                                : () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                    _openFile(
-                                                                        note);
-                                                                  },
-                                                        icon: _processingNotes[
+                                                        onPressed: _processingNotes[
                                                                     noteId] ==
+                                                                true
+                                                            ? null
+                                                            : () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                _openFile(note);
+                                                              },
+                                                        icon: _processingNotes[noteId] ==
                                                                 true
                                                             ? const SizedBox(
                                                                 width: 16,
                                                                 height: 16,
-                                                                child:
-                                                                    CircularProgressIndicator(
-                                                                        strokeWidth:
-                                                                            2))
+                                                                child: CircularProgressIndicator(
+                                                                    strokeWidth:
+                                                                        2))
                                                             : const Icon(
                                                                 Icons
                                                                     .visibility_outlined,
                                                                 size: 18),
                                                         label: Text(
-                                                            _processingNotes[
-                                                                        noteId] ==
+                                                            _processingNotes[noteId] ==
                                                                     true
                                                                 ? "Loading File..."
                                                                 : "View Note"),
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                                padding: const EdgeInsets
-                                                                    .symmetric(
-                                                                    vertical:
-                                                                        12)))),
+                                                        style: ElevatedButton.styleFrom(
+                                                            padding: const EdgeInsets.symmetric(
+                                                                vertical: 12)))),
                                                 const SizedBox(height: 10),
                                                 const Center(
                                                     child: Text(
@@ -672,10 +666,9 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                                                             fontSize: 11,
                                                             fontStyle: FontStyle
                                                                 .italic,
-                                                            color: Colors
-                                                                .grey),
-                                                        textAlign: TextAlign
-                                                            .center)),
+                                                            color: Colors.grey),
+                                                        textAlign:
+                                                            TextAlign.center)),
                                               ]))
                                   ])),
                         ),
@@ -782,8 +775,8 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                       ),
                       value: _selectedTimePeriod,
                       items: _timePeriods
-                          .map((period) =>
-                              DropdownMenuItem(value: period, child: Text(period)))
+                          .map((period) => DropdownMenuItem(
+                              value: period, child: Text(period)))
                           .toList(),
                       onChanged: (value) {
                         if (value != null && value != _selectedTimePeriod) {
@@ -833,8 +826,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                 color: theme.colorScheme.errorContainer.withAlpha(26),
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(children: [
                   Icon(Icons.warning_amber_rounded,
                       color: theme.colorScheme.error),
@@ -845,8 +837,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                               color: theme.colorScheme.onErrorContainer))),
                   IconButton(
                     icon: Icon(Icons.close_rounded,
-                        size: 18,
-                        color: theme.colorScheme.onErrorContainer),
+                        size: 18, color: theme.colorScheme.onErrorContainer),
                     onPressed: () => setState(() => _errorMessage = ""),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -893,8 +884,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                             if (isAdIndex) {
                               if (noteIndex < _notes.length) {
                                 return NativeAdWidget(
-                                  key: ValueKey(
-                                      'trending_ad_slot_$noteIndex'),
+                                  key: ValueKey('trending_ad_slot_$noteIndex'),
                                   adUnitKey: 'ADMOB_NATIVE_AD_TRENDING',
                                   useTestId: _useTestAdsTrending,
                                   height: adHeight,
@@ -981,8 +971,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                                note['title']?.toString() ?? "Untitled Note",
+                            Text(note['title']?.toString() ?? "Untitled Note",
                                 style: theme.textTheme.titleMedium
                                     ?.copyWith(fontWeight: FontWeight.bold)),
                             if (note['is_public'] == true)
@@ -1073,8 +1062,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                       child: Wrap(
                         spacing: 8,
                         runSpacing: 6,
-                        children:
-                            (note['tags'] as List).map<Widget>((tag) {
+                        children: (note['tags'] as List).map<Widget>((tag) {
                           return Chip(
                               label: Text(tag.toString()),
                               padding: const EdgeInsets.symmetric(
@@ -1107,8 +1095,7 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(children: [
                           Icon(
-                              _getFileIcon(
-                                  note['file_type']?.toString() ?? ''),
+                              _getFileIcon(note['file_type']?.toString() ?? ''),
                               size: 16,
                               color: theme.colorScheme.primary),
                           const SizedBox(width: 6),
@@ -1134,14 +1121,12 @@ class _TrendingNotesScreenState extends State<TrendingNotesScreen>
                     children: [
                       Row(children: [
                         Icon(Icons.remove_red_eye_outlined,
-                            size: 16,
-                            color: theme.textTheme.bodySmall?.color),
+                            size: 16, color: theme.textTheme.bodySmall?.color),
                         const SizedBox(width: 5),
                         Text("$viewCount", style: theme.textTheme.bodySmall),
                         const SizedBox(width: 16),
                         Icon(Icons.favorite_border_rounded,
-                            size: 16,
-                            color: theme.textTheme.bodySmall?.color),
+                            size: 16, color: theme.textTheme.bodySmall?.color),
                         const SizedBox(width: 5),
                         Text("$likeCount", style: theme.textTheme.bodySmall)
                       ]),

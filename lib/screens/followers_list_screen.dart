@@ -7,7 +7,8 @@ class FollowersListScreen extends StatefulWidget {
   final String userId;
   final bool showFollowers; // Determines if we show followers or following
 
-  const FollowersListScreen({super.key, required this.userId, required this.showFollowers});
+  const FollowersListScreen(
+      {super.key, required this.userId, required this.showFollowers});
 
   @override
   FollowersListScreenState createState() => FollowersListScreenState();
@@ -36,27 +37,27 @@ class FollowersListScreenState extends State<FollowersListScreen> {
         // Get users who follow the current user using FollowersService
         final followers = await _followersService.getFollowers(widget.userId);
         if (mounted) {
-            setState(() {
-              _users = followers;
-              _isLoading = false;
-            });
+          setState(() {
+            _users = followers;
+            _isLoading = false;
+          });
         }
       } else {
         // Get users whom the current user follows using FollowersService
         final following = await _followersService.getFollowing(widget.userId);
         if (mounted) {
-            setState(() {
-              _users = following;
-              _isLoading = false;
-            });
+          setState(() {
+            _users = following;
+            _isLoading = false;
+          });
         }
       }
     } catch (e) {
       if (mounted) {
-          setState(() {
-            _isLoading = false;
-            _errorMessage = "Error loading users: $e";
-          });
+        setState(() {
+          _isLoading = false;
+          _errorMessage = "Error loading users: $e";
+        });
       }
     }
   }
@@ -81,7 +82,8 @@ class FollowersListScreenState extends State<FollowersListScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                      const Icon(Icons.error_outline,
+                          size: 48, color: Colors.red),
                       const SizedBox(height: 16),
                       Text(
                         _errorMessage,
@@ -102,7 +104,9 @@ class FollowersListScreenState extends State<FollowersListScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            widget.showFollowers ? Icons.people_outline : Icons.person_outline,
+                            widget.showFollowers
+                                ? Icons.people_outline
+                                : Icons.person_outline,
                             size: 64,
                             color: Colors.grey,
                           ),
@@ -121,14 +125,17 @@ class FollowersListScreenState extends State<FollowersListScreen> {
                       itemBuilder: (context, index) {
                         final userData = _users[index];
                         final userId = userData['id'];
-                        
+
                         return ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Colors.grey[300],
-                            backgroundImage: userData['profile_picture'] != null && userData['profile_picture'].isNotEmpty
-                                ? NetworkImage(userData['profile_picture'])
-                                : null,
-                            child: userData['profile_picture'] == null || userData['profile_picture'].isEmpty
+                            backgroundImage:
+                                userData['profile_picture'] != null &&
+                                        userData['profile_picture'].isNotEmpty
+                                    ? NetworkImage(userData['profile_picture'])
+                                    : null,
+                            child: userData['profile_picture'] == null ||
+                                    userData['profile_picture'].isEmpty
                                 ? Icon(Icons.person, color: Colors.grey[700])
                                 : null,
                           ),
@@ -140,7 +147,8 @@ class FollowersListScreenState extends State<FollowersListScreen> {
                               MaterialPageRoute(
                                 builder: (context) => ProfileScreen(
                                   userId: userId,
-                                  currentUserId: SupabaseService.currentUserId ?? "",
+                                  currentUserId:
+                                      SupabaseService.currentUserId ?? "",
                                 ),
                               ),
                             ).then((_) {

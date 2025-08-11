@@ -4,22 +4,18 @@ class SearchService {
   final _supabase = SupabaseService.client;
 
   /// **Search notes by tags, title, or content**
-  Future<List<Map<String, dynamic>>> searchNotes(String query, String userId) async {
+  Future<List<Map<String, dynamic>>> searchNotes(
+      String query, String userId) async {
     try {
       // First approach: Use Supabase's built-in text search (this might not be working)
       try {
-        final data = await _supabase.rpc(
-          'search_notes',
-          params: {
-            'search_query': query,
-            'current_user_id': userId
-          }
-        );
-        
+        final data = await _supabase.rpc('search_notes',
+            params: {'search_query': query, 'current_user_id': userId});
+
         return List<Map<String, dynamic>>.from(data);
       } catch (e) {
         print("RPC search failed, using fallback method: $e");
-        
+
         // Fallback approach: Use ILIKE for case-insensitive pattern matching
         // First get public notes with matching content
         final publicNotesData = await _supabase
@@ -28,15 +24,15 @@ class SearchService {
             .eq('is_public', true)
             .or('title.ilike.%${query}%,content.ilike.%${query}%')
             .order('created_at', ascending: false);
-            
-        // Then get user's own notes with matching content 
+
+        // Then get user's own notes with matching content
         final userNotesData = await _supabase
             .from('notes')
             .select('*, profiles:user_id(*)')
             .eq('user_id', userId)
             .or('title.ilike.%${query}%,content.ilike.%${query}%')
             .order('created_at', ascending: false);
-            
+
         // Also search notes with matching tags using contains operator
         final tagNotesData = await _supabase
             .from('notes')
@@ -44,10 +40,10 @@ class SearchService {
             .or('is_public.eq.true,user_id.eq.$userId')
             .filter('tags', 'cs', '{$query}')
             .order('created_at', ascending: false);
-            
+
         // Combine results and remove duplicates
         final Map<String, Map<String, dynamic>> uniqueNotes = {};
-        
+
         for (var note in [
           ...List<Map<String, dynamic>>.from(publicNotesData),
           ...List<Map<String, dynamic>>.from(userNotesData),
@@ -55,7 +51,7 @@ class SearchService {
         ]) {
           uniqueNotes[note['id']] = note;
         }
-        
+
         return uniqueNotes.values.toList();
       }
     } catch (e) {
@@ -72,7 +68,7 @@ class SearchService {
           .select()
           .or('username.ilike.%${query}%,name.ilike.%${query}%')
           .order('username');
-          
+
       return List<Map<String, dynamic>>.from(data);
     } catch (e) {
       print("Error searching users: $e");
@@ -81,7 +77,8 @@ class SearchService {
   }
 
   /// **Search notes by tag**
-  Future<List<Map<String, dynamic>>> searchNotesByTag(String tag, String userId) async {
+  Future<List<Map<String, dynamic>>> searchNotesByTag(
+      String tag, String userId) async {
     try {
       // First get public notes with this tag
       final publicNotesData = await _supabase
@@ -90,7 +87,7 @@ class SearchService {
           .eq('is_public', true)
           .filter('tags', 'cs', '{$tag}')
           .order('created_at', ascending: false);
-          
+
       // Then get user's own notes with this tag
       final userNotesData = await _supabase
           .from('notes')
@@ -98,17 +95,17 @@ class SearchService {
           .eq('user_id', userId)
           .filter('tags', 'cs', '{$tag}')
           .order('created_at', ascending: false);
-          
+
       // Combine results and remove duplicates
       final Map<String, Map<String, dynamic>> uniqueNotes = {};
-      
+
       for (var note in [
         ...List<Map<String, dynamic>>.from(publicNotesData),
         ...List<Map<String, dynamic>>.from(userNotesData)
       ]) {
         uniqueNotes[note['id']] = note;
       }
-      
+
       return uniqueNotes.values.toList();
     } catch (e) {
       print("Error searching notes by tag: $e");
@@ -121,21 +118,16 @@ class SearchService {
     try {
       try {
         // This would ideally be an RPC function in Supabase
-        final data = await _supabase.rpc(
-          'get_popular_tags',
-          params: {}
-        );
-        
+        final data = await _supabase.rpc('get_popular_tags', params: {});
+
         return List<String>.from(data);
       } catch (e) {
         print("RPC for popular tags failed, using fallback method: $e");
-        
+
         // Fallback approach
-        final notesData = await _supabase
-            .from('notes')
-            .select('tags')
-            .limit(100);
-            
+        final notesData =
+            await _supabase.from('notes').select('tags').limit(100);
+
         // Count tag occurrences
         Map<String, int> tagCounts = {};
         for (var note in notesData) {
@@ -148,11 +140,11 @@ class SearchService {
             }
           }
         }
-        
+
         // Sort tags by count
         var sortedTags = tagCounts.entries.toList()
           ..sort((a, b) => b.value.compareTo(a.value));
-        
+
         return sortedTags.take(10).map((e) => e.key).toList();
       }
     } catch (e) {

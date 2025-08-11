@@ -40,8 +40,7 @@ class NotificationService {
         // We assume you have a 'profiles' table with an 'fcm_token' column
         await _supabase
             .from('profiles')
-            .update({'fcm_token': token})
-            .eq('id', currentUser.id);
+            .update({'fcm_token': token}).eq('id', currentUser.id);
         print('FCM token saved to Supabase for user ${currentUser.id}');
       } catch (e) {
         print('Error saving FCM token to Supabase: $e');
@@ -51,17 +50,16 @@ class NotificationService {
 
   // Call this method on logout to remove the token
   Future<void> removeTokenOnLogout() async {
-      final currentUser = _supabase.auth.currentUser;
-      if (currentUser != null) {
-           try {
-              await _supabase
-                .from('profiles')
-                .update({'fcm_token': null})
-                .eq('id', currentUser.id);
-             print('FCM token removed from Supabase for user ${currentUser.id}');
-           } catch(e) {
-              print('Error removing FCM token from Supabase: $e');
-           }
+    final currentUser = _supabase.auth.currentUser;
+    if (currentUser != null) {
+      try {
+        await _supabase
+            .from('profiles')
+            .update({'fcm_token': null}).eq('id', currentUser.id);
+        print('FCM token removed from Supabase for user ${currentUser.id}');
+      } catch (e) {
+        print('Error removing FCM token from Supabase: $e');
       }
+    }
   }
 }

@@ -20,7 +20,6 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
   String errorMessage = "";
   final FocusNode _searchFocusNode = FocusNode();
 
-
   @override
   void initState() {
     super.initState();
@@ -59,8 +58,7 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
           searchResults = List<Map<String, dynamic>>.from(data);
           isSearching = false;
           errorMessage = "";
-          if (searchResults.isEmpty) {
-          }
+          if (searchResults.isEmpty) {}
         });
       }
     } catch (e) {
@@ -68,7 +66,8 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
         setState(() {
           isSearching = false;
           if (e.toString().contains('permission')) {
-            errorMessage = "You don't have permission to search users. Make sure you're signed in.";
+            errorMessage =
+                "You don't have permission to search users. Make sure you're signed in.";
           } else {
             errorMessage = "Error searching users. Please try again.";
           }
@@ -89,7 +88,6 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
     _searchFocusNode.unfocus();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -100,7 +98,8 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
         slivers: [
           SliverAppBar(
             title: const Text("Search Users"),
-            backgroundColor: isDarkMode ? Colors.black : theme.appBarTheme.backgroundColor,
+            backgroundColor:
+                isDarkMode ? Colors.black : theme.appBarTheme.backgroundColor,
             elevation: 0,
             pinned: true,
             floating: true,
@@ -114,18 +113,25 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
                 child: TextField(
                   controller: searchController,
                   focusNode: _searchFocusNode,
-                  style: TextStyle(color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : null),
+                  style: TextStyle(
+                      color: isDarkMode
+                          ? Colors.white.withValues(alpha: 0.9)
+                          : null),
                   decoration: InputDecoration(
                     hintText: "Search by username or name...",
-                    prefixIcon: Icon(Icons.search_rounded, color: theme.inputDecorationTheme.prefixIconColor),
+                    prefixIcon: Icon(Icons.search_rounded,
+                        color: theme.inputDecorationTheme.prefixIconColor),
                     suffixIcon: searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: Icon(Icons.clear_rounded, color: theme.inputDecorationTheme.suffixIconColor),
+                            icon: Icon(Icons.clear_rounded,
+                                color:
+                                    theme.inputDecorationTheme.suffixIconColor),
                             onPressed: _clearSearch,
                           )
                         : null,
                     contentPadding: const EdgeInsets.symmetric(vertical: 14.0),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16.0)),
                   ),
                   onChanged: (query) => _searchUsers(query),
                   onSubmitted: (query) => _searchUsers(query),
@@ -133,66 +139,75 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
               ),
             ),
           ),
-
           if (errorMessage.isNotEmpty)
             SliverToBoxAdapter(
               child: Container(
                 color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: Row(
-                  children: [
-                    Icon(Icons.error_outline_rounded, color: theme.colorScheme.error),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(errorMessage, style: TextStyle(color: theme.colorScheme.onErrorContainer))),
-                    IconButton(
-                      icon: Icon(Icons.close_rounded, size: 18, color: theme.colorScheme.onErrorContainer),
-                      onPressed: () => setState(() { errorMessage = ""; }),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    )
-                  ]
-                ),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(children: [
+                  Icon(Icons.error_outline_rounded,
+                      color: theme.colorScheme.error),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: Text(errorMessage,
+                          style: TextStyle(
+                              color: theme.colorScheme.onErrorContainer))),
+                  IconButton(
+                    icon: Icon(Icons.close_rounded,
+                        size: 18, color: theme.colorScheme.onErrorContainer),
+                    onPressed: () => setState(() {
+                      errorMessage = "";
+                    }),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  )
+                ]),
               ),
             ),
-
           if (isSearching)
-            const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
-          if (!isSearching && searchController.text.isEmpty && searchResults.isEmpty)
+            const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator())),
+          if (!isSearching &&
+              searchController.text.isEmpty &&
+              searchResults.isEmpty)
             SliverFillRemaining(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.person_search_outlined, size: 70, color: theme.hintColor),
-                      const SizedBox(height: 20),
-                      Text(
-                        "Find users by their username or name.",
-                        style: theme.textTheme.titleMedium?.copyWith(color: theme.hintColor),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person_search_outlined,
+                        size: 70, color: theme.hintColor),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Find users by their username or name.",
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(color: theme.hintColor),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-              )
-            ),
-          if (!isSearching && searchResults.isEmpty && searchController.text.isNotEmpty)
+              ),
+            )),
+          if (!isSearching &&
+              searchResults.isEmpty &&
+              searchController.text.isNotEmpty)
             SliverFillRemaining(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    'No users found matching "${searchController.text}"',
-                    style: theme.textTheme.titleMedium?.copyWith(color: theme.hintColor),
-                    textAlign: TextAlign.center,
-                  ),
+                child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'No users found matching "${searchController.text}"',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: theme.hintColor),
+                  textAlign: TextAlign.center,
                 ),
-              )
-            ),
-          
+              ),
+            )),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             sliver: SliverList(
@@ -205,30 +220,44 @@ class SearchUsersScreenState extends State<SearchUsersScreen> {
 
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 6.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0)),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
                       leading: CircleAvatar(
                         radius: 24,
-                        backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                        backgroundImage: user['profile_picture'] != null && (user['profile_picture'] as String).isNotEmpty
+                        backgroundColor: theme.colorScheme.primaryContainer
+                            .withValues(alpha: 0.5),
+                        backgroundImage: user['profile_picture'] != null &&
+                                (user['profile_picture'] as String).isNotEmpty
                             ? NetworkImage(user['profile_picture'])
                             : null,
-                        child: (user['profile_picture'] == null || (user['profile_picture'] as String).isEmpty)
-                            ? Icon(Icons.person_rounded, color: theme.colorScheme.onPrimaryContainer, size: 26)
+                        child: (user['profile_picture'] == null ||
+                                (user['profile_picture'] as String).isEmpty)
+                            ? Icon(Icons.person_rounded,
+                                color: theme.colorScheme.onPrimaryContainer,
+                                size: 26)
                             : null,
                       ),
                       title: Text(
-                        user['username'] != null && (user['username'] as String).isNotEmpty
+                        user['username'] != null &&
+                                (user['username'] as String).isNotEmpty
                             ? "@${user['username']}"
                             : user['name'] ?? "Unknown User",
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(
-                        user['name'] ?? ( (user['username'] != null && (user['username'] as String).isNotEmpty) ? "" : "No name provided"),
+                        user['name'] ??
+                            ((user['username'] != null &&
+                                    (user['username'] as String).isNotEmpty)
+                                ? ""
+                                : "No name provided"),
                         style: theme.textTheme.bodySmall,
                       ),
-                      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18, color: theme.hintColor),
+                      trailing: Icon(Icons.arrow_forward_ios_rounded,
+                          size: 18, color: theme.hintColor),
                       onTap: () {
                         _searchFocusNode.unfocus();
                         Navigator.push(

@@ -11,7 +11,8 @@ class ForumPostScreen extends StatefulWidget {
   final String postId;
   final String userId;
 
-  const ForumPostScreen({super.key, required this.postId, required this.userId});
+  const ForumPostScreen(
+      {super.key, required this.postId, required this.userId});
 
   @override
   State<ForumPostScreen> createState() => _ForumPostScreenState();
@@ -153,8 +154,10 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
   }
 
   Future<void> _fetchMoreReplies() async {
-    if (_isLoadingMoreReplies || !_hasMoreReplies || !mounted || _postData == null)
-      return;
+    if (_isLoadingMoreReplies ||
+        !_hasMoreReplies ||
+        !mounted ||
+        _postData == null) return;
     setState(() => _isLoadingMoreReplies = true);
 
     _currentReplyPage++;
@@ -310,8 +313,8 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
               onPressed: () => Navigator.pop(dialogContext, true),
               style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.error),
-              child:
-                  Text("Delete", style: TextStyle(color: theme.colorScheme.onError))),
+              child: Text("Delete",
+                  style: TextStyle(color: theme.colorScheme.onError))),
         ],
       ),
     );
@@ -322,8 +325,9 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor:
-            isError ? Theme.of(context).colorScheme.error : Colors.green.shade600,
+        backgroundColor: isError
+            ? Theme.of(context).colorScheme.error
+            : Colors.green.shade600,
         behavior: SnackBarBehavior.floating,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -364,23 +368,22 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline_rounded,
-                      color: theme.colorScheme.error, size: 60),
-                  const SizedBox(height: 16),
-                  Text(
-                      _postErrorMessage.isNotEmpty
-                          ? _postErrorMessage
-                          : "Post not found.",
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(color: theme.colorScheme.error)),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                      onPressed: _loadAllData, child: const Text("Try Again"))
-                ]),
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Icon(Icons.error_outline_rounded,
+                  color: theme.colorScheme.error, size: 60),
+              const SizedBox(height: 16),
+              Text(
+                  _postErrorMessage.isNotEmpty
+                      ? _postErrorMessage
+                      : "Post not found.",
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: theme.colorScheme.error)),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                  onPressed: _loadAllData, child: const Text("Try Again"))
+            ]),
           ),
         ),
       );
@@ -388,7 +391,8 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
 
     final post = _postData!;
     final bool isPostOwner = widget.userId == post['user_id'];
-    final String postAuthorName = post['author_name'] as String? ?? "Unknown User";
+    final String postAuthorName =
+        post['author_name'] as String? ?? "Unknown User";
     final String? postAuthorPic = post['author_profile_picture'] as String?;
     final int upvotes = post['upvotes'] as int? ?? 0;
     final int downvotes = post['downvotes'] as int? ?? 0;
@@ -501,12 +505,13 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         IconButton(
-                                          icon: Icon(
-                                              Icons.arrow_upward_rounded,
-                                              color: _currentUserVoteForThisPost ==
-                                                      1
-                                                  ? theme.colorScheme.primary
-                                                  : theme.hintColor,
+                                          icon: Icon(Icons.arrow_upward_rounded,
+                                              color:
+                                                  _currentUserVoteForThisPost ==
+                                                          1
+                                                      ? theme
+                                                          .colorScheme.primary
+                                                      : theme.hintColor,
                                               size: 26),
                                           onPressed: () =>
                                               _toggleVoteForThisPost(1),
@@ -528,10 +533,11 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                                         IconButton(
                                           icon: Icon(
                                               Icons.arrow_downward_rounded,
-                                              color: _currentUserVoteForThisPost ==
-                                                      -1
-                                                  ? theme.colorScheme.error
-                                                  : theme.hintColor,
+                                              color:
+                                                  _currentUserVoteForThisPost ==
+                                                          -1
+                                                      ? theme.colorScheme.error
+                                                      : theme.hintColor,
                                               size: 26),
                                           onPressed: () =>
                                               _toggleVoteForThisPost(-1),
@@ -584,8 +590,7 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                   _buildRepliesList(theme, isDarkMode),
                   SliverToBoxAdapter(
                       child: SizedBox(
-                          height:
-                              MediaQuery.of(context).padding.bottom + 90)),
+                          height: MediaQuery.of(context).padding.bottom + 90)),
                 ],
               ),
             ),
@@ -604,8 +609,8 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                         blurRadius: 10,
                         offset: const Offset(0, -3))
                   ],
-                  border:
-                      Border(top: BorderSide(color: theme.dividerColor, width: 0.5))),
+                  border: Border(
+                      top: BorderSide(color: theme.dividerColor, width: 0.5))),
               child: Row(
                 children: [
                   Expanded(
@@ -622,7 +627,8 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                       maxLines: 5,
                       // FIX: `withOpacity` is deprecated, use `withAlpha`. (255 * 0.9).round() = 230
                       style: TextStyle(
-                          color: isDarkMode ? Colors.white.withAlpha(230) : null),
+                          color:
+                              isDarkMode ? Colors.white.withAlpha(230) : null),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -633,7 +639,8 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                     tooltip: "Post Reply",
                     style: IconButton.styleFrom(
                         // FIX: `withOpacity` is deprecated, use `withAlpha`. (255 * 0.1).round() = 26
-                        backgroundColor: theme.colorScheme.primary.withAlpha(26),
+                        backgroundColor:
+                            theme.colorScheme.primary.withAlpha(26),
                         padding: const EdgeInsets.all(14)),
                   ),
                 ],
@@ -667,8 +674,7 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
           child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 20.0),
         child: Center(
-          child:
-              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(Icons.chat_bubble_outline_rounded,
                 size: 50, color: theme.hintColor),
             const SizedBox(height: 16),
@@ -688,13 +694,15 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
               _isLoadingMoreReplies) {
             return const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20.0),
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2.5)));
+                child:
+                    Center(child: CircularProgressIndicator(strokeWidth: 2.5)));
           }
           if (index == _replies.length &&
               _hasMoreReplies &&
               !_isLoadingMoreReplies) {
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 60),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 60),
               child: OutlinedButton(
                 onPressed: _fetchMoreReplies,
                 child: const Text("Load More Replies"),
@@ -727,8 +735,8 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                   CircleAvatar(
                     radius: 18,
                     // FIX: `withOpacity` is deprecated, use `withAlpha`. (255 * 0.6).round() = 153
-                    backgroundColor:
-                        theme.colorScheme.surfaceContainerHighest.withAlpha(153),
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest
+                        .withAlpha(153),
                     backgroundImage:
                         replyAuthorPic != null && replyAuthorPic.isNotEmpty
                             ? NetworkImage(replyAuthorPic)
@@ -758,8 +766,7 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        SelectableText(
-                            reply['reply_content'] as String? ?? "",
+                        SelectableText(reply['reply_content'] as String? ?? "",
                             style: theme.textTheme.bodyMedium
                                 ?.copyWith(height: 1.5)),
                       ],

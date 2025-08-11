@@ -211,14 +211,17 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
     if (!mounted) return;
     if (success) {
       _showMessage(
-          engagementProvider.isNoteLiked(noteId) ? "Note liked" : "Note unliked",
+          engagementProvider.isNoteLiked(noteId)
+              ? "Note liked"
+              : "Note unliked",
           isError: false);
     } else {
       _showMessage("Failed to update like status", isError: true);
     }
   }
 
-  Future<void> _toggleNoteVisibility(String noteId, bool currentlyPublic) async {
+  Future<void> _toggleNoteVisibility(
+      String noteId, bool currentlyPublic) async {
     if (!mounted) return;
     try {
       final success =
@@ -277,7 +280,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
     }
   }
 
-  void _showMessage(String message, {bool isError = false, Duration? duration}) {
+  void _showMessage(String message,
+      {bool isError = false, Duration? duration}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -369,86 +373,91 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                       Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8.0, vertical: 8.0),
-                          child:
-                              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                            IconButton(
-                                icon: const Icon(Icons.close_rounded),
-                                onPressed: () => Navigator.pop(context),
-                                tooltip: "Close"),
-                            Expanded(child: Container()),
-                            Row(mainAxisSize: MainAxisSize.min, children: [
-                              isProcessingLike
-                                  ? const Padding(
-                                      padding: EdgeInsets.all(12.0),
-                                      child: SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                              strokeWidth: 2)))
-                                  : IconButton(
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                    icon: const Icon(Icons.close_rounded),
+                                    onPressed: () => Navigator.pop(context),
+                                    tooltip: "Close"),
+                                Expanded(child: Container()),
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                                  isProcessingLike
+                                      ? const Padding(
+                                          padding: EdgeInsets.all(12.0),
+                                          child: SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                  strokeWidth: 2)))
+                                      : IconButton(
+                                          icon: Icon(
+                                              isLiked
+                                                  ? Icons.favorite_rounded
+                                                  : Icons
+                                                      .favorite_border_rounded,
+                                              color: isLiked
+                                                  ? Colors.redAccent
+                                                  : theme.iconTheme.color,
+                                              size: 22),
+                                          onPressed: () =>
+                                              _toggleNoteLike(noteId),
+                                          tooltip: isLiked ? "Unlike" : "Like"),
+                                  if (isOwner)
+                                    IconButton(
+                                        icon: Icon(
+                                            note['is_public'] == true
+                                                ? Icons.public_off_rounded
+                                                : Icons.public_rounded,
+                                            color: note['is_public'] == true
+                                                ? Colors.grey.shade500
+                                                : Colors.green.shade500,
+                                            size: 22),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          _toggleNoteVisibility(noteId,
+                                              note['is_public'] == true);
+                                        },
+                                        tooltip: note['is_public'] == true
+                                            ? "Make Private"
+                                            : "Make Public"),
+                                  IconButton(
                                       icon: Icon(
-                                          isLiked
-                                              ? Icons.favorite_rounded
-                                              : Icons.favorite_border_rounded,
-                                          color: isLiked
-                                              ? Colors.redAccent
+                                          isSaved
+                                              ? Icons.bookmark_rounded
+                                              : Icons.bookmark_border_rounded,
+                                          color: isSaved
+                                              ? theme.colorScheme.primary
                                               : theme.iconTheme.color,
                                           size: 22),
-                                      onPressed: () => _toggleNoteLike(noteId),
-                                      tooltip: isLiked ? "Unlike" : "Like"),
-                              if (isOwner)
-                                IconButton(
-                                    icon: Icon(
-                                        note['is_public'] == true
-                                            ? Icons.public_off_rounded
-                                            : Icons.public_rounded,
-                                        color: note['is_public'] == true
-                                            ? Colors.grey.shade500
-                                            : Colors.green.shade500,
-                                        size: 22),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      _toggleNoteVisibility(
-                                          noteId, note['is_public'] == true);
-                                    },
-                                    tooltip: note['is_public'] == true
-                                        ? "Make Private"
-                                        : "Make Public"),
-                              IconButton(
-                                  icon: Icon(
-                                      isSaved
-                                          ? Icons.bookmark_rounded
-                                          : Icons.bookmark_border_rounded,
-                                      color: isSaved
-                                          ? theme.colorScheme.primary
-                                          : theme.iconTheme.color,
-                                      size: 22),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _toggleSaveNote(noteId, isSaved);
-                                  },
-                                  tooltip: isSaved ? "Unsave" : "Save"),
-                              IconButton(
-                                  icon: const Icon(Icons.share_outlined, size: 22),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _shareNoteText(
-                                        note['title']?.toString() ?? "",
-                                        note['content']?.toString() ?? "");
-                                  },
-                                  tooltip: "Share Text Content"),
-                              IconButton(
-                                  icon: const Icon(Icons.copy_outlined, size: 20),
-                                  onPressed: () {
-                                    Clipboard.setData(ClipboardData(
-                                        text: note['content']?.toString() ??
-                                            ""));
-                                    _showMessage("Content copied",
-                                        isError: false);
-                                  },
-                                  tooltip: "Copy Content"),
-                            ])
-                          ])),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _toggleSaveNote(noteId, isSaved);
+                                      },
+                                      tooltip: isSaved ? "Unsave" : "Save"),
+                                  IconButton(
+                                      icon: const Icon(Icons.share_outlined,
+                                          size: 22),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _shareNoteText(
+                                            note['title']?.toString() ?? "",
+                                            note['content']?.toString() ?? "");
+                                      },
+                                      tooltip: "Share Text Content"),
+                                  IconButton(
+                                      icon: const Icon(Icons.copy_outlined,
+                                          size: 20),
+                                      onPressed: () {
+                                        Clipboard.setData(ClipboardData(
+                                            text: note['content']?.toString() ??
+                                                ""));
+                                        _showMessage("Content copied",
+                                            isError: false);
+                                      },
+                                      tooltip: "Copy Content"),
+                                ])
+                              ])),
                       Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 8),
@@ -466,8 +475,7 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                       horizontal: 10, vertical: 5),
                                   decoration: BoxDecoration(
                                       color: Colors.green.withAlpha(38),
-                                      borderRadius:
-                                          BorderRadius.circular(16)),
+                                      borderRadius: BorderRadius.circular(16)),
                                   child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -484,8 +492,7 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                           ])),
                       if (!isOwner && note['profiles'] != null)
                         Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(20, 4, 20, 8),
+                            padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
                             child: Row(children: [
                               CircleAvatar(
                                   radius: 18,
@@ -500,15 +507,13 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                       : null),
                               const SizedBox(width: 10),
                               Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(authorName,
                                         style: theme.textTheme.titleSmall
                                             ?.copyWith(
                                                 color: onSurfaceColor,
-                                                fontWeight:
-                                                    FontWeight.w600)),
+                                                fontWeight: FontWeight.w600)),
                                     if (authorUsername != null)
                                       Text("@$authorUsername",
                                           style: theme.textTheme.bodySmall
@@ -541,23 +546,20 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                       if (note['tags'] != null &&
                           (note['tags'] as List).isNotEmpty)
                         Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                             child: Wrap(
                                 spacing: 8,
                                 runSpacing: 6,
                                 children: (note['tags'] as List)
                                     .map<Widget>((tag) => Chip(
                                         label: Text(tag.toString()),
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 4),
-                                        visualDensity:
-                                            VisualDensity.compact,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        visualDensity: VisualDensity.compact,
                                         labelStyle: TextStyle(
                                             fontSize: 12,
-                                            color: theme.chipTheme.labelStyle
-                                                ?.color),
+                                            color: theme
+                                                .chipTheme.labelStyle?.color),
                                         backgroundColor:
                                             theme.chipTheme.backgroundColor,
                                         shape: RoundedRectangleBorder(
@@ -570,8 +572,7 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                               controller: controller,
                               padding: const EdgeInsets.all(20),
                               child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SelectableText(
                                         note['content']?.toString() ??
@@ -582,9 +583,7 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                                 color: onSurfaceColor
                                                     .withAlpha(217))),
                                     if (note['file_url'] != null &&
-                                        note['file_url']
-                                            .toString()
-                                            .isNotEmpty)
+                                        note['file_url'].toString().isNotEmpty)
                                       Container(
                                           margin: const EdgeInsets.only(
                                               top: 24, bottom: 16),
@@ -606,8 +605,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                                       _getFileIcon(
                                                           note['file_type'] ??
                                                               ''),
-                                                      color: theme.colorScheme
-                                                          .primary),
+                                                      color: theme
+                                                          .colorScheme.primary),
                                                   const SizedBox(width: 10),
                                                   Expanded(
                                                       child: Text(
@@ -635,43 +634,35 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                                 SizedBox(
                                                     width: double.infinity,
                                                     child: ElevatedButton.icon(
-                                                        onPressed:
-                                                            _processingNotes[
-                                                                        noteId] ==
-                                                                    true
-                                                                ? null
-                                                                : () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                    _openFile(
-                                                                        note);
-                                                                  },
-                                                        icon: _processingNotes[
+                                                        onPressed: _processingNotes[
                                                                     noteId] ==
+                                                                true
+                                                            ? null
+                                                            : () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                _openFile(note);
+                                                              },
+                                                        icon: _processingNotes[noteId] ==
                                                                 true
                                                             ? const SizedBox(
                                                                 width: 16,
                                                                 height: 16,
-                                                                child:
-                                                                    CircularProgressIndicator(
-                                                                        strokeWidth:
-                                                                            2))
+                                                                child: CircularProgressIndicator(
+                                                                    strokeWidth:
+                                                                        2))
                                                             : const Icon(
                                                                 Icons
                                                                     .visibility_outlined,
                                                                 size: 18),
                                                         label: Text(
-                                                            _processingNotes[
-                                                                        noteId] ==
+                                                            _processingNotes[noteId] ==
                                                                     true
                                                                 ? "Loading File..."
                                                                 : "View Note"),
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                                padding: const EdgeInsets
-                                                                    .symmetric(
-                                                                    vertical:
-                                                                        12)))),
+                                                        style: ElevatedButton.styleFrom(
+                                                            padding: const EdgeInsets.symmetric(
+                                                                vertical: 12)))),
                                                 const SizedBox(height: 10),
                                                 // FIX: Add const to Center and its children for performance.
                                                 const Center(
@@ -681,10 +672,9 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                                             fontSize: 11,
                                                             fontStyle: FontStyle
                                                                 .italic,
-                                                            color: Colors
-                                                                .grey),
-                                                        textAlign: TextAlign
-                                                            .center)),
+                                                            color: Colors.grey),
+                                                        textAlign:
+                                                            TextAlign.center)),
                                               ]))
                                   ])))
                     ],
@@ -730,7 +720,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
             scrolledUnderElevation: 0,
             bottom: PreferredSize(
               // Contains the TextField
-              preferredSize: const Size.fromHeight(70.0), // Adjust height as needed
+              preferredSize:
+                  const Size.fromHeight(70.0), // Adjust height as needed
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 12.0),
                 child: TextField(
@@ -758,8 +749,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                           )
                         : null,
                     // Uses InputDecorationTheme from main.dart for fill, border, etc.
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 14.0), // Adjust padding
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 14.0), // Adjust padding
                     border: OutlineInputBorder(
                         borderRadius:
                             BorderRadius.circular(16.0)), // More rounded
@@ -797,8 +788,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                         itemCount: popularTags.length,
                         itemBuilder: (context, index) {
                           return Padding(
-                            padding:
-                                const EdgeInsets.only(right: 10.0), // Increased spacing
+                            padding: const EdgeInsets.only(
+                                right: 10.0), // Increased spacing
                             child: ActionChip(
                               label: Text(popularTags[index]),
                               onPressed: () {
@@ -807,8 +798,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                               },
                               // Uses ChipTheme from main.dart
                               shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(10.0)), // More rounded
+                                  borderRadius: BorderRadius.circular(
+                                      10.0)), // More rounded
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8), // More padding
                             ),
@@ -826,12 +817,10 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
           if (errorMessage.isNotEmpty)
             SliverToBoxAdapter(
               child: Container(
-                color: theme.colorScheme.errorContainer
-                    .withAlpha(26),
+                color: theme.colorScheme.errorContainer.withAlpha(26),
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(children: [
                   Icon(Icons.warning_amber_rounded,
                       color: theme.colorScheme.error),
@@ -842,8 +831,7 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                               color: theme.colorScheme.onErrorContainer))),
                   IconButton(
                     icon: Icon(Icons.close_rounded,
-                        size: 18,
-                        color: theme.colorScheme.onErrorContainer),
+                        size: 18, color: theme.colorScheme.onErrorContainer),
                     onPressed: () => setState(() {
                       errorMessage = "";
                     }),
@@ -940,7 +928,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                 String? authorUsername, authorProfilePic;
                 if (note['profiles'] != null &&
                     note['profiles'] is Map<String, dynamic>) {
-                  final authorProfile = note['profiles'] as Map<String, dynamic>;
+                  final authorProfile =
+                      note['profiles'] as Map<String, dynamic>;
                   authorName = authorProfile['name'] ?? "Unknown";
                   authorUsername = authorProfile['username'];
                   authorProfilePic = authorProfile['profile_picture'];
@@ -955,11 +944,10 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                   final int likeCount = engagementProvider.getLikeCount(noteId);
 
                   return Card(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(18.0)),
+                        borderRadius: BorderRadius.circular(18.0)),
                     child: InkWell(
                       onTap: () => _viewNoteDetails(note),
                       borderRadius: BorderRadius.circular(18.0),
@@ -985,10 +973,9 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                           authorProfilePic == null ||
                                           authorProfilePic.isEmpty)
                                       ? Icon(
-                                          _getFileIcon(
-                                              note['file_type'] ?? ''),
-                                          color: theme.colorScheme
-                                              .onPrimaryContainer,
+                                          _getFileIcon(note['file_type'] ?? ''),
+                                          color: theme
+                                              .colorScheme.onPrimaryContainer,
                                           size: 22)
                                       : null,
                                 ),
@@ -1003,15 +990,13 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                               "Untitled Note",
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
-                                                  fontWeight:
-                                                      FontWeight.bold)),
+                                                  fontWeight: FontWeight.bold)),
                                       if (note['is_public'] == true)
                                         Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 4.0),
+                                            padding:
+                                                const EdgeInsets.only(top: 4.0),
                                             child: Row(
-                                                mainAxisSize:
-                                                    MainAxisSize.min,
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Icon(Icons.public_rounded,
                                                       size: 14,
@@ -1021,10 +1006,10 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                                   Text("Public",
                                                       style: TextStyle(
                                                           fontSize: 11,
-                                                          color: Colors.green
-                                                              .shade600,
-                                                          fontWeight: FontWeight
-                                                              .w500))
+                                                          color: Colors
+                                                              .green.shade600,
+                                                          fontWeight:
+                                                              FontWeight.w500))
                                                 ])),
                                     ],
                                   ),
@@ -1038,9 +1023,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                           height: 24,
                                           child: Padding(
                                               padding: EdgeInsets.all(4.0),
-                                              child:
-                                                  CircularProgressIndicator(
-                                                      strokeWidth: 2)))
+                                              child: CircularProgressIndicator(
+                                                  strokeWidth: 2)))
                                     else
                                       IconButton(
                                           icon: Icon(
@@ -1054,10 +1038,8 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                               size: 20),
                                           onPressed: () =>
                                               _toggleNoteLike(noteId),
-                                          tooltip:
-                                              isLiked ? "Unlike" : "Like",
-                                          visualDensity:
-                                              VisualDensity.compact),
+                                          tooltip: isLiked ? "Unlike" : "Like",
+                                          visualDensity: VisualDensity.compact),
                                     if (isOwner)
                                       IconButton(
                                           icon: Icon(
@@ -1075,24 +1057,20 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                           tooltip: note['is_public'] == true
                                               ? "Make Private"
                                               : "Make Public",
-                                          visualDensity:
-                                              VisualDensity.compact),
+                                          visualDensity: VisualDensity.compact),
                                     IconButton(
                                         icon: Icon(
                                             isSaved
                                                 ? Icons.bookmark_rounded
-                                                : Icons
-                                                    .bookmark_border_rounded,
+                                                : Icons.bookmark_border_rounded,
                                             color: isSaved
                                                 ? theme.colorScheme.primary
                                                 : theme.iconTheme.color,
                                             size: 20),
                                         onPressed: () =>
                                             _toggleSaveNote(noteId, isSaved),
-                                        tooltip:
-                                            isSaved ? "Unsave" : "Save",
-                                        visualDensity:
-                                            VisualDensity.compact),
+                                        tooltip: isSaved ? "Unsave" : "Save",
+                                        visualDensity: VisualDensity.compact),
                                   ],
                                 ),
                               ],
@@ -1114,16 +1092,15 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                 child: Wrap(
                                   spacing: 8,
                                   runSpacing: 6,
-                                  children: (note['tags'] as List)
-                                      .map<Widget>((tag) {
+                                  children:
+                                      (note['tags'] as List).map<Widget>((tag) {
                                     return Chip(
                                         label: Text(tag.toString()),
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 4),
                                         shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                8.0))
-                                        );
+                                            borderRadius:
+                                                BorderRadius.circular(8.0)));
                                   }).toList(),
                                 ),
                               ),
@@ -1161,13 +1138,11 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                                             note['file_name'].toString(),
                                             style: TextStyle(
                                                 fontSize: 12,
-                                                color: theme
-                                                    .colorScheme.primary,
-                                                fontWeight:
-                                                    FontWeight.w500),
+                                                color:
+                                                    theme.colorScheme.primary,
+                                                fontWeight: FontWeight.w500),
                                             maxLines: 1,
-                                            overflow:
-                                                TextOverflow.ellipsis)),
+                                            overflow: TextOverflow.ellipsis)),
                                     const SizedBox(width: 4),
                                     Text(
                                         "(${_formatFileSize(note['file_size'] ?? 0)})",
@@ -1176,73 +1151,60 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                             Divider(
                                 height: 24,
                                 thickness: 0.5,
-                                color: theme.dividerColor
-                                    .withAlpha(179)),
+                                color: theme.dividerColor.withAlpha(179)),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(children: [
                                   Icon(Icons.remove_red_eye_outlined,
                                       size: 16,
-                                      color:
-                                          theme.textTheme.bodySmall?.color),
+                                      color: theme.textTheme.bodySmall?.color),
                                   const SizedBox(width: 5),
                                   Text("$viewCount",
                                       style: theme.textTheme.bodySmall),
                                   const SizedBox(width: 16),
                                   Icon(Icons.favorite_border_rounded,
                                       size: 16,
-                                      color:
-                                          theme.textTheme.bodySmall?.color),
+                                      color: theme.textTheme.bodySmall?.color),
                                   const SizedBox(width: 5),
                                   Text("$likeCount",
                                       style: theme.textTheme.bodySmall)
                                 ]),
-                                Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      TextButton.icon(
-                                          icon: const Icon(Icons.read_more_rounded,
-                                              size: 18),
-                                          label: const Text("Details"),
-                                          style: TextButton.styleFrom(
-                                              padding: EdgeInsets.zero,
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              textStyle: const TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight:
-                                                      FontWeight.w500)),
-                                          onPressed: () =>
-                                              _viewNoteDetails(note)),
-                                      if (note['file_url'] != null &&
-                                          note['file_url']
-                                              .toString()
-                                              .isNotEmpty)
-                                        Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10.0),
-                                            child: TextButton.icon(
-                                                icon: const Icon(
-                                                    Icons.file_open_outlined,
-                                                    size: 18),
-                                                label: const Text("View File"),
-                                                style: TextButton.styleFrom(
-                                                    padding: EdgeInsets.zero,
-                                                    visualDensity:
-                                                        VisualDensity.compact,
-                                                    textStyle: const TextStyle(
-                                                        fontSize: 13,
-                                                        fontWeight: FontWeight
-                                                            .w500)),
-                                                onPressed:
-                                                    _processingNotes[noteId] ==
-                                                            true
-                                                        ? null
-                                                        : () =>
-                                                            _openFile(note)))
-                                    ])
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                                  TextButton.icon(
+                                      icon: const Icon(Icons.read_more_rounded,
+                                          size: 18),
+                                      label: const Text("Details"),
+                                      style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          visualDensity: VisualDensity.compact,
+                                          textStyle: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w500)),
+                                      onPressed: () => _viewNoteDetails(note)),
+                                  if (note['file_url'] != null &&
+                                      note['file_url'].toString().isNotEmpty)
+                                    Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: TextButton.icon(
+                                            icon: const Icon(
+                                                Icons.file_open_outlined,
+                                                size: 18),
+                                            label: const Text("View File"),
+                                            style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                textStyle: const TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                            onPressed:
+                                                _processingNotes[noteId] == true
+                                                    ? null
+                                                    : () => _openFile(note)))
+                                ])
                               ],
                             )
                           ],
@@ -1253,9 +1215,7 @@ class SearchNotesScreenState extends State<SearchNotesScreen> {
                 });
               },
               childCount: notes.length +
-                  (adFrequency > 0
-                      ? (notes.length ~/ adFrequency)
-                      : 0),
+                  (adFrequency > 0 ? (notes.length ~/ adFrequency) : 0),
             ),
           ),
         ],

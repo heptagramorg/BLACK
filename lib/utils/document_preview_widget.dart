@@ -14,7 +14,8 @@ class DocumentPreviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fileExtension = path.extension(fileName).toLowerCase().replaceAll('.', '');
+    final fileExtension =
+        path.extension(fileName).toLowerCase().replaceAll('.', '');
     final File file = File(filePath);
 
     // Get file size
@@ -510,8 +511,8 @@ class DocumentPreviewWidget extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.grey.withAlpha(51)),
+                              border:
+                                  Border.all(color: Colors.grey.withAlpha(51)),
                             ),
                             child: Center(
                               child: Container(

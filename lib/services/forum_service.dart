@@ -26,7 +26,8 @@ class ForumService {
     }
   }
 
-  Future<Map<String, dynamic>> togglePostVote(String postId, String userId, int voteValue) async {
+  Future<Map<String, dynamic>> togglePostVote(
+      String postId, String userId, int voteValue) async {
     if (userId.isEmpty) {
       return {'success': false, 'error': 'User not authenticated'};
     }
@@ -48,23 +49,33 @@ class ForumService {
             'new_downvotes': result['new_downvotes'] as int? ?? 0,
           };
         } else {
-          final errorMsg = result['error'] ?? 'Unknown RPC error while toggling vote.';
+          final errorMsg =
+              result['error'] ?? 'Unknown RPC error while toggling vote.';
           return {'success': false, 'error': errorMsg};
         }
       } else {
-        return {'success': false, 'error': 'Unexpected result from server (togglePostVote RPC). Found: ${result.runtimeType}'};
+        return {
+          'success': false,
+          'error':
+              'Unexpected result from server (togglePostVote RPC). Found: ${result.runtimeType}'
+        };
       }
     } catch (e) {
       print("Error calling toggle_post_vote RPC for post $postId: $e");
       if (e is PostgrestException) {
         return {'success': false, 'error': 'Database error: ${e.message}'};
       }
-      return {'success': false, 'error': 'Network or unexpected error: ${e.toString()}'};
+      return {
+        'success': false,
+        'error': 'Network or unexpected error: ${e.toString()}'
+      };
     }
   }
 
-  Future<Map<String, dynamic>?> getUserProfile(String userId, {bool useCache = true}) async {
-    if (userId.isEmpty) return {"name": "Unknown User", "profile_picture": null};
+  Future<Map<String, dynamic>?> getUserProfile(String userId,
+      {bool useCache = true}) async {
+    if (userId.isEmpty)
+      return {"name": "Unknown User", "profile_picture": null};
     if (useCache && _userProfileCache.containsKey(userId)) {
       return _userProfileCache[userId]!;
     }
@@ -76,16 +87,24 @@ class ForumService {
           .maybeSingle(); // Use maybeSingle to handle null gracefully
 
       if (userData != null) {
-         _userProfileCache[userId] = userData;
-         return userData;
+        _userProfileCache[userId] = userData;
+        return userData;
       } else {
-         final fallback = {"name": "Unknown User", "profile_picture": null, "error": true};
-         _userProfileCache[userId] = fallback;
-         return fallback;
+        final fallback = {
+          "name": "Unknown User",
+          "profile_picture": null,
+          "error": true
+        };
+        _userProfileCache[userId] = fallback;
+        return fallback;
       }
     } catch (e) {
       print("❌ ForumService: Error fetching user profile for $userId: $e");
-      final fallback = {"name": "Unknown User", "profile_picture": null, "error": true};
+      final fallback = {
+        "name": "Unknown User",
+        "profile_picture": null,
+        "error": true
+      };
       _userProfileCache[userId] = fallback;
       return fallback;
     }
@@ -111,20 +130,23 @@ class ForumService {
       if (result is List) {
         return result.cast<Map<String, dynamic>>();
       } else {
-        print('Unexpected result type from get_forum_posts_with_details RPC: ${result.runtimeType}');
+        print(
+            'Unexpected result type from get_forum_posts_with_details RPC: ${result.runtimeType}');
         return []; // Or throw an error
       }
     } catch (e) {
       print('Error fetching forum posts via RPC: $e');
       // Consider rethrowing or returning an empty list with an error indicator
       if (e is PostgrestException) {
-         print('PostgrestException details: ${e.message}, code: ${e.code}, details: ${e.details}');
+        print(
+            'PostgrestException details: ${e.message}, code: ${e.code}, details: ${e.details}');
       }
       return [];
     }
   }
 
-  Future<Map<String, dynamic>?> getSinglePostDetails({required String postId}) async {
+  Future<Map<String, dynamic>?> getSinglePostDetails(
+      {required String postId}) async {
     try {
       final result = await _supabase.rpc(
         'get_single_post_details',
@@ -136,8 +158,9 @@ class ForumService {
       } else if (result is List && result.isEmpty) {
         return null; // Post not found
       } else {
-         print('Unexpected result type from get_single_post_details RPC: ${result.runtimeType}');
-         return null;
+        print(
+            'Unexpected result type from get_single_post_details RPC: ${result.runtimeType}');
+        return null;
       }
     } catch (e) {
       print('Error fetching single post details via RPC: $e');
@@ -162,8 +185,9 @@ class ForumService {
       if (result is List) {
         return result.cast<Map<String, dynamic>>();
       } else {
-         print('Unexpected result type from get_forum_replies_with_details RPC: ${result.runtimeType}');
-         return [];
+        print(
+            'Unexpected result type from get_forum_replies_with_details RPC: ${result.runtimeType}');
+        return [];
       }
     } catch (e) {
       print('Error fetching forum replies via RPC: $e');

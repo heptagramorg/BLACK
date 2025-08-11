@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.dark; //  Default to Dark Mode because thats what i like
+  ThemeMode _themeMode =
+      ThemeMode.dark; //  Default to Dark Mode because thats what i like
 
   ThemeMode get themeMode => _themeMode;
 

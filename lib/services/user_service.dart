@@ -9,11 +9,8 @@ class UserService {
   /// **Fetch user profile from Supabase**
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
     try {
-      final profile = await _supabase
-          .from('profiles')
-          .select()
-          .eq('id', userId)
-          .single();
+      final profile =
+          await _supabase.from('profiles').select().eq('id', userId).single();
 
       return profile;
     } catch (e) {
@@ -28,10 +25,7 @@ class UserService {
       // Remove last_updated field if it exists to avoid updating it manually
       data.remove('last_updated');
 
-      await _supabase
-          .from('profiles')
-          .update(data)
-          .eq('id', userId);
+      await _supabase.from('profiles').update(data).eq('id', userId);
     } catch (e) {
       print("Error updating profile: $e");
       rethrow; // Rethrow to allow caller to handle
@@ -66,7 +60,8 @@ class UserService {
         'user_uuid': userId, // Ensure parameter name matches RPC function
         'bytes_to_add': bytes, // Ensure parameter name matches RPC function
       });
-      print("Successfully called increment_storage RPC for user $userId, adding $bytes bytes.");
+      print(
+          "Successfully called increment_storage RPC for user $userId, adding $bytes bytes.");
     } catch (e) {
       print("Error calling increment_storage RPC for user $userId: $e");
       // Consider rethrowing or specific error handling
@@ -84,9 +79,11 @@ class UserService {
       // Call the Supabase RPC function 'decrement_storage'
       await _supabase.rpc('decrement_storage', params: {
         'user_uuid': userId, // Ensure parameter name matches RPC function
-        'bytes_to_subtract': bytes, // Ensure parameter name matches RPC function
+        'bytes_to_subtract':
+            bytes, // Ensure parameter name matches RPC function
       });
-      print("Successfully called decrement_storage RPC for user $userId, subtracting $bytes bytes.");
+      print(
+          "Successfully called decrement_storage RPC for user $userId, subtracting $bytes bytes.");
     } catch (e) {
       print("Error calling decrement_storage RPC for user $userId: $e");
       // Consider rethrowing or specific error handling
@@ -163,22 +160,24 @@ class UserService {
       );
       // The RPC is designed to return a single JSON object
       if (result is Map<String, dynamic>) {
-          // Check for an error field within the JSON response from the RPC
-          if (result['error'] != null) {
-              print("Error from get_profile_screen_data RPC: ${result['error']}");
-              // Return the map containing the error message for the UI to handle
-              return {'error_message': result['error']};
-          }
+        // Check for an error field within the JSON response from the RPC
+        if (result['error'] != null) {
+          print("Error from get_profile_screen_data RPC: ${result['error']}");
+          // Return the map containing the error message for the UI to handle
+          return {'error_message': result['error']};
+        }
         return result; // This map contains 'profile', 'followers_count', etc.
       } else {
-         print('Unexpected result type from get_profile_screen_data RPC: ${result.runtimeType}. Expected Map<String, dynamic>.');
-         // You might want to throw a more specific error or return a structured error map
-         throw Exception('Failed to parse profile data from server.');
+        print(
+            'Unexpected result type from get_profile_screen_data RPC: ${result.runtimeType}. Expected Map<String, dynamic>.');
+        // You might want to throw a more specific error or return a structured error map
+        throw Exception('Failed to parse profile data from server.');
       }
     } catch (e) {
       print('Error calling getProfileScreenData RPC: $e');
       if (e is PostgrestException) {
-        print('PostgrestException details: ${e.message}, code: ${e.code}, details: ${e.details}');
+        print(
+            'PostgrestException details: ${e.message}, code: ${e.code}, details: ${e.details}');
       }
       // Rethrow so the UI can handle it, or return a structured error
       throw Exception('Failed to load profile data: ${e.toString()}');

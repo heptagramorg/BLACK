@@ -38,7 +38,6 @@ import 'services/supabase_service.dart';
 import 'services/auth_service.dart';
 import 'services/user_service.dart';
 
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 // It's better practice to keep state out of global variables where possible,
@@ -131,25 +130,25 @@ void _handleAuthStateChange(AuthState data) async {
   final currentContext = navigatorKey.currentContext;
 
   if (event == AuthChangeEvent.signedIn && session != null) {
-      // FIX: The method 'getProfile' was not defined in UserService.
-      // Replaced with a direct Supabase call to check if a profile exists.
-      final profileResponse = await Supabase.instance.client
-          .from('profiles')
-          .select('id')
-          .eq('id', session.user.id)
-          .maybeSingle();
+    // FIX: The method 'getProfile' was not defined in UserService.
+    // Replaced with a direct Supabase call to check if a profile exists.
+    final profileResponse = await Supabase.instance.client
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .maybeSingle();
 
-      if (profileResponse == null) {
-        // If no profile exists for the signed-in user, create one.
-        // This is the definitive fix for the sign-up issue.
-        await _createProfileForNewUser(session.user);
-      }
+    if (profileResponse == null) {
+      // If no profile exists for the signed-in user, create one.
+      // This is the definitive fix for the sign-up issue.
+      await _createProfileForNewUser(session.user);
+    }
 
     // A user has signed in. Initialize user-specific providers.
     if (currentContext != null && currentContext.mounted) {
       final noteEngagementProvider =
           Provider.of<NoteEngagementProvider>(currentContext, listen: false);
-      
+
       AuthService().getUserRole(session.user.id).then((role) {
         // Check if context is still mounted after async operation.
         if (currentContext.mounted) {
@@ -178,10 +177,11 @@ void _handleAuthStateChange(AuthState data) async {
 Future<void> _createProfileForNewUser(User user) async {
   try {
     // Generate a potential username from user metadata (OAuth) or email.
-    final emailUsername = user.email?.split('@').first ?? 'user${DateTime.now().millisecondsSinceEpoch}';
+    final emailUsername = user.email?.split('@').first ??
+        'user${DateTime.now().millisecondsSinceEpoch}';
     final potentialUsername = user.userMetadata?['username'] ??
-                              user.userMetadata?['name']?.replaceAll(' ', '_').toLowerCase() ??
-                              emailUsername;
+        user.userMetadata?['name']?.replaceAll(' ', '_').toLowerCase() ??
+        emailUsername;
 
     // Ensure the username is unique to avoid database constraint errors.
     var finalUsername = potentialUsername;
@@ -204,7 +204,8 @@ Future<void> _createProfileForNewUser(User user) async {
     }
 
     // Extract other details from user metadata.
-    final fullName = user.userMetadata?['full_name'] ?? user.userMetadata?['name'];
+    final fullName =
+        user.userMetadata?['full_name'] ?? user.userMetadata?['name'];
     final avatarUrl = user.userMetadata?['avatar_url'];
 
     // Insert the new profile into the 'profiles' table.
@@ -224,7 +225,6 @@ Future<void> _createProfileForNewUser(User user) async {
     debugPrint('Error creating profile: $e');
   }
 }
-
 
 /// The initial widget that decides whether to show the app or an error screen.
 class EntryApp extends StatelessWidget {
@@ -326,11 +326,13 @@ class MyApp extends StatelessWidget {
                 displayColor: Colors.white,
               )
               .copyWith(
-                titleLarge:
-                    const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                titleLarge: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600),
                 titleMedium: TextStyle(
-                    color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w500),
-                titleSmall: TextStyle(color: darkBodyTextColor.withOpacity(0.9)),
+                    color: Colors.white.withOpacity(0.9),
+                    fontWeight: FontWeight.w500),
+                titleSmall:
+                    TextStyle(color: darkBodyTextColor.withOpacity(0.9)),
                 bodyLarge:
                     const TextStyle(color: darkBodyTextColor, height: 1.5),
                 bodyMedium:
@@ -350,8 +352,7 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryPurple,
               foregroundColor: Colors.white,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12.0))),
               textStyle: const TextStyle(
@@ -363,8 +364,8 @@ class MyApp extends StatelessWidget {
           textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
             foregroundColor: accentPurpleDarkTheme,
-            textStyle:
-                const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Roboto'),
+            textStyle: const TextStyle(
+                fontWeight: FontWeight.w600, fontFamily: 'Roboto'),
           )),
           outlinedButtonTheme: OutlinedButtonThemeData(
               style: OutlinedButton.styleFrom(
@@ -513,8 +514,7 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryPurple,
               foregroundColor: Colors.white,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12.0))),
               textStyle: const TextStyle(
@@ -526,8 +526,8 @@ class MyApp extends StatelessWidget {
           textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
             foregroundColor: accentPurpleLightTheme,
-            textStyle:
-                const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Roboto'),
+            textStyle: const TextStyle(
+                fontWeight: FontWeight.w600, fontFamily: 'Roboto'),
           )),
           outlinedButtonTheme: OutlinedButtonThemeData(
               style: OutlinedButton.styleFrom(
@@ -540,7 +540,9 @@ class MyApp extends StatelessWidget {
           chipTheme: ChipThemeData(
             backgroundColor: Colors.grey[200],
             labelStyle: const TextStyle(
-                color: lightSubtleTextColor, fontFamily: 'Roboto', fontSize: 12),
+                color: lightSubtleTextColor,
+                fontFamily: 'Roboto',
+                fontSize: 12),
             selectedColor: primaryPurple.withOpacity(0.1),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             shape: const RoundedRectangleBorder(
@@ -637,8 +639,8 @@ class MyApp extends StatelessWidget {
                   builder = (BuildContext context) => _buildRedirectToLogin(
                       "Email required for OTP verification.", context);
                 } else {
-                  builder = (BuildContext _) =>
-                      VerifyOtpAndResetScreen(email: email);
+                  builder =
+                      (BuildContext _) => VerifyOtpAndResetScreen(email: email);
                 }
                 break;
               case '/manage_notes':
@@ -659,15 +661,16 @@ class MyApp extends StatelessWidget {
                   builder = (BuildContext context) => _buildRedirectToLogin(
                       "User ID required for Upload Note", context);
                 } else {
-                  builder = (BuildContext _) => UploadNotesScreen(userId: userId);
+                  builder =
+                      (BuildContext _) => UploadNotesScreen(userId: userId);
                 }
                 break;
               case '/profile':
                 final profileUserId = args['userId'] as String?;
                 final currentLoggedInUserId = SupabaseService.currentUserId;
                 if (profileUserId == null || profileUserId.isEmpty) {
-                  builder = (BuildContext context) =>
-                      _buildRedirectToLogin("Profile User ID required", context);
+                  builder = (BuildContext context) => _buildRedirectToLogin(
+                      "Profile User ID required", context);
                 } else if (currentLoggedInUserId == null ||
                     currentLoggedInUserId.isEmpty) {
                   builder = (BuildContext context) => _buildRedirectToLogin(
@@ -687,7 +690,8 @@ class MyApp extends StatelessWidget {
                   builder = (BuildContext context) => _buildRedirectToLogin(
                       "Login required to Search Notes", context);
                 } else {
-                  builder = (BuildContext _) => SearchNotesScreen(userId: userId);
+                  builder =
+                      (BuildContext _) => SearchNotesScreen(userId: userId);
                 }
                 break;
               case '/search_users':
@@ -732,7 +736,8 @@ class MyApp extends StatelessWidget {
                   builder = (BuildContext context) => _buildRedirectToLogin(
                       "Login required to Create Post", context);
                 } else {
-                  builder = (BuildContext _) => CreatePostScreen(userId: userId);
+                  builder =
+                      (BuildContext _) => CreatePostScreen(userId: userId);
                 }
                 break;
               case '/followers_list':
@@ -749,8 +754,8 @@ class MyApp extends StatelessWidget {
               case '/forum':
                 final userId = SupabaseService.currentUserId;
                 if (userId == null || userId.isEmpty) {
-                  builder = (BuildContext context) =>
-                      _buildRedirectToLogin("Login required for Forum", context);
+                  builder = (BuildContext context) => _buildRedirectToLogin(
+                      "Login required for Forum", context);
                 } else {
                   builder = (BuildContext _) => ForumScreen(userId: userId);
                 }
@@ -778,8 +783,8 @@ class MyApp extends StatelessWidget {
         currentNavigator.pushNamedAndRemoveUntil(
             '/login', (Route<dynamic> route) => false);
         if (currentNavigator.context.mounted) {
-            ScaffoldMessenger.of(currentNavigator.context).showSnackBar(
-                SnackBar(content: Text(message), duration: const Duration(seconds: 3)));
+          ScaffoldMessenger.of(currentNavigator.context).showSnackBar(SnackBar(
+              content: Text(message), duration: const Duration(seconds: 3)));
         }
       }
     });
@@ -821,8 +826,7 @@ class InitializationErrorScreen extends StatelessWidget {
                 const Icon(Icons.error_outline, color: Colors.red, size: 60),
                 const SizedBox(height: 20),
                 const Text("Application Initialization Failed",
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center),
                 const SizedBox(height: 15),
                 Container(
@@ -836,8 +840,7 @@ class InitializationErrorScreen extends StatelessWidget {
                       textAlign: TextAlign.center),
                 ),
                 const SizedBox(height: 25),
-                const Text(
-                    "Please check your connection and restart the app.",
+                const Text("Please check your connection and restart the app.",
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey)),
               ],
